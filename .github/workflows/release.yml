@@ -17,9 +17,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: oven-sh/setup-bun@v1
+
       - uses: 'moonrepo/setup-toolchain@v0'
-        with:
-          auto-install: true
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

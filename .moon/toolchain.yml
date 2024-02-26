@@ -1,2 +1,3 @@
-bun:
-  version: '1.0.29'
+$schema: 'https://moonrepo.dev/schemas/toolchain.json'
+
+bun: {}
