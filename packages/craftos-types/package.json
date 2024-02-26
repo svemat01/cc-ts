@@ -1,0 +1,13 @@
+{
+    "name": "@cc-ts/craftos-types",
+    "version": "0.0.1",
+    "description": "TypeScript type definitions for base CraftOS APIs.",
+    "private": false,
+    "types": "./craftos.d.ts",
+    "files": ["./craftos.d.ts"],
+    "author": "Svemat",
+    "license": "MIT",
+    "publishConfig": {
+      "access": "public"
+    }
+}
