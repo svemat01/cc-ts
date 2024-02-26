@@ -2,7 +2,11 @@
   "name": "@cc-ts/root",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "publish": "moon :build && changeset publish"
+  },
   "devDependencies": {
+    "@moonrepo/cli": "^1.21.4",
     "@types/bun": "latest"
   },
   "peerDependencies": {
@@ -13,5 +17,6 @@
   ],
   "dependencies": {
     "@changesets/cli": "^2.27.1"
-  }
+  },
+  "trustedDependencies": ["@moonrepo/cli"]
 }

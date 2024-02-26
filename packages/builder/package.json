@@ -7,9 +7,6 @@
   "bin": {
     "cc-ts": "src/index.ts"
   },
-  "scripts": {
-    "publish": "changeset publish"
-  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/yargs": "^17.0.32"
