@@ -13,13 +13,11 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
+      - uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
 
-      - uses: oven-sh/setup-bun@v1
-
-      - name: Install Dependencies
-        run: bun install
+      - uses: 'moonrepo/setup-toolchain@v0'
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
