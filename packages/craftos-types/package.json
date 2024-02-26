@@ -1,6 +1,6 @@
 {
     "name": "@cc-ts/craftos-types",
-    "version": "0.0.1",
+    "version": "0.0.0",
     "description": "TypeScript type definitions for base CraftOS APIs.",
     "private": false,
     "types": "./craftos.d.ts",
