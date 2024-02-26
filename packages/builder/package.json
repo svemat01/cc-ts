@@ -3,6 +3,7 @@
   "module": "src/index.ts",
   "type": "module",
   "version": "0.0.1",
+  "private": false,
   "bin": {
     "cc-ts": "src/index.ts"
   },
