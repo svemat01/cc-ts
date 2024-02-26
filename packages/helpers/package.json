@@ -1,0 +1,28 @@
+{
+  "name": "@cc-ts/helpers",
+  "version": "0.0.0",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "publish": "tstl && changeset publish"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@cc-ts/craftos-types": "workspace:*",
+    "@jackmacwindows/cc-types": "^1.0.1",
+    "@jackmacwindows/lua-types": "^2.13.2",
+    "@jackmacwindows/typescript-to-lua": "^1.22.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
