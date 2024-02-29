@@ -2,7 +2,7 @@
   "name": "create-cc-ts",
   "module": "src/index.ts",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": false,
   "bin": {
     "create-cc-ts": "src/index.ts"
