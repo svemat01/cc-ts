@@ -4,6 +4,8 @@ import { resolveDependencies } from "@jackmacwindows/typescript-to-lua/dist/tran
 import * as performance from "@jackmacwindows/typescript-to-lua/dist/measure-performance";
 import * as path from "node:path";
 import { CCBundler } from "./bundler";
+import { logger as _logger } from "./logger";
+
 export class TranspilationError extends Error {
     constructor(
         message: string,
@@ -33,6 +35,10 @@ export class TranspilationError extends Error {
 export const transpileProjectFiles = async (
     parseResult: tstl.ParsedCommandLine
 ) => {
+    const logger = _logger.child({ module: "transpiler" });
+    logger.info("Starting project transpilation");
+    logger.debug("Creating program from parsed command line");
+
     const program = ts.createProgram({
         rootNames: parseResult.fileNames,
         options: parseResult.options,
@@ -40,25 +46,31 @@ export const transpileProjectFiles = async (
         configFileParsingDiagnostics:
             ts.getConfigFileParsingDiagnostics(parseResult),
     });
+
+    logger.debug("Getting pre-emit diagnostics");
     const preEmitDiagnostics = ts.getPreEmitDiagnostics(program);
 
+    logger.debug("Starting transpilation");
     const { diagnostics: transpileDiagnostics, emitSkipped } =
         new CCTranspiler().emit({
             program,
         });
 
+    logger.trace("Sorting and deduplicating diagnostics");
     const diagnostics = ts.sortAndDeduplicateDiagnostics([
         ...preEmitDiagnostics,
         ...transpileDiagnostics,
     ]);
 
     if (diagnostics.length > 0) {
+        logger.error("Transpilation failed with diagnostics");
         throw new TranspilationError(
             "Failed to transpile project",
             diagnostics
         );
     }
 
+    logger.info("Project transpilation completed successfully");
     return {
         diagnostics,
         emitSkipped,
@@ -67,6 +79,8 @@ export const transpileProjectFiles = async (
 };
 
 export class CCTranspiler extends tstl.Transpiler {
+    private logger = _logger.child({ class: "CCTranspiler" });
+
     constructor(options?: tstl.TranspilerOptions) {
         super(options);
     }
@@ -77,14 +91,15 @@ export class CCTranspiler extends tstl.Transpiler {
         files: tstl.ProcessedFile[],
         plugins: tstl.Plugin[]
     ): { emitPlan: tstl.EmitFile[] } {
+        this.logger.debug("Starting emit plan construction");
         performance.startSection("getEmitPlan");
         const options = program.getCompilerOptions() as tstl.CompilerOptions;
 
         if (options.tstlVerbose) {
-            console.log("Constructing emit plan");
+            this.logger.trace("Verbose mode enabled");
         }
 
-        // Resolve imported modules and modify output Lua requires
+        this.logger.debug("Resolving dependencies");
         const resolutionResult = resolveDependencies(
             program,
             files,
@@ -93,7 +108,9 @@ export class CCTranspiler extends tstl.Transpiler {
         );
         diagnostics.push(...resolutionResult.diagnostics);
 
-        // Remove lualib placeholders from resolution result
+        this.logger.trace(
+            "Filtering lualib placeholders from resolution result"
+        );
         resolutionResult.resolvedFiles = resolutionResult.resolvedFiles.filter(
             (f) => f.fileName !== (options.luaLibName ?? "lualib_bundle")
         );
@@ -101,21 +118,24 @@ export class CCTranspiler extends tstl.Transpiler {
         let emitPlan: tstl.EmitFile[] = [];
         const sourceDir = tstl.getSourceDir(program);
 
+        this.logger.debug("Creating bundler instance");
         const bundler = new CCBundler(
             resolutionResult.resolvedFiles,
             program,
             this.emitHost
         );
 
+        this.logger.info(`Processing ${files.length} files`);
         for (const file of files) {
             const fileName = path.resolve(sourceDir, file.fileName);
-            console.log({ fileName });
+            this.logger.trace("Bundling module", { fileName });
             const bundleResult = bundler.bundleModule(
-                CCBundler.createModulePath(fileName, program)
+                bundler.createModulePath(fileName)
             );
             emitPlan.push(bundleResult);
         }
 
+        this.logger.debug("Emit plan construction completed");
         return { emitPlan };
     }
 }

@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 
-import { log } from "./logger.ts";
+import { logger } from "./logger.ts";
 import { TranspilationError, transpileProjectFiles } from "./transpiler.ts";
 import { watch } from "node:fs/promises";
 import { parseConfigFileWithSystem } from "@jackmacwindows/typescript-to-lua";
@@ -57,11 +57,11 @@ export const build = async (_config: BuildConfig) => {
 
     const parseResult = parseConfigFileWithSystem(tsconfigPath);
 
-    log.info(`Transpiling project`);
+    logger.info(`Transpiling project`);
 
     await transpileProjectFiles(parseResult).catch((err) => {
         if (err instanceof TranspilationError) {
-            log.error(err.message);
+            logger.error(err.message);
             console.log(err.getDiagnosticsString());
             throw err;
         } else {
@@ -69,7 +69,7 @@ export const build = async (_config: BuildConfig) => {
         }
     });
 
-    log.info(`Done!`);
+    logger.info(`Done!`);
 };
 
 export const watchProject = async (config: BuildConfig, dir: string) => {

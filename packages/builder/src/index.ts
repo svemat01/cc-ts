@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
-import { isAbsolute, normalize } from 'node:path';
-import { resolve } from 'node:path';
+import { isAbsolute, normalize } from "node:path";
+import { resolve } from "node:path";
 import yargs, { type CommandModule } from "yargs";
 import { hideBin } from "yargs/helpers";
 import { build, watchProject } from "./build.ts";
-import { LOGGER_LEVELS, LOGGER_LEVEL, log, setLoggerLevel } from './logger.ts';
+import { logger, setLoggerLevel } from "./logger.ts";
 
 await yargs(hideBin(process.argv))
     // add --minify flag to both commands
@@ -20,21 +20,20 @@ await yargs(hideBin(process.argv))
         default: false,
         description: "Run in debug mode",
         coerce: (debug) => {
-            if (debug && LOGGER_LEVEL < LOGGER_LEVELS.debug) {
+            if (debug) {
                 setLoggerLevel("debug");
             }
             return debug;
-        }
+        },
     })
     .option("verbose", {
         alias: "v",
         type: "boolean",
         default: false,
         description: "Run with verbose logging",
-        // set the LOGGER_LEVEL environment variable to "verbose" if the verbose flag is set
         coerce: (verbose) => {
-            if (verbose && LOGGER_LEVEL < LOGGER_LEVELS.verbose) {
-                setLoggerLevel("verbose");
+            if (verbose) {
+                setLoggerLevel("trace");
             }
             return verbose;
         },
@@ -54,30 +53,37 @@ await yargs(hideBin(process.argv))
         "dev [dir]",
         "Start the development server",
         (yargs) =>
-            yargs.positional("dir", {
-                type: "string",
-                default: ".",
-                description: "Directory to watch",
-            }).option("port", {
-                alias: "p",
-                type: "number",
-                default: 8080,
-                description: "Port to serve on",
-            }).option('srcDir', {
-                type: 'string',
-                default: 'src',
-                description: 'Directory to watch',
-            }),
+            yargs
+                .positional("dir", {
+                    type: "string",
+                    default: ".",
+                    description: "Directory to watch",
+                })
+                .option("port", {
+                    alias: "p",
+                    type: "number",
+                    default: 8080,
+                    description: "Port to serve on",
+                })
+                .option("srcDir", {
+                    type: "string",
+                    default: "src",
+                    description: "Directory to watch",
+                }),
         async (args) => {
-            const dirAbs = isAbsolute(args.dir) ? args.dir : resolve(process.cwd(), args.dir);
+            const dirAbs = isAbsolute(args.dir)
+                ? args.dir
+                : resolve(process.cwd(), args.dir);
 
-            log.info(`Serving ${dirAbs}/dist on port ${args.port}`);
+            logger.info(`Serving ${dirAbs}/dist on port ${args.port}`);
             Bun.serve({
                 port: args.port,
                 fetch(request, server) {
                     // remove the leading slash
-                    const requestPath = normalize(new URL(request.url).pathname).slice(1);
-                    const filePath = resolve(dirAbs, 'dist/', requestPath);
+                    const requestPath = normalize(
+                        new URL(request.url).pathname
+                    ).slice(1);
+                    const filePath = resolve(dirAbs, "dist/", requestPath);
                     console.log({
                         requestPath,
                         filePath,
@@ -85,19 +91,18 @@ await yargs(hideBin(process.argv))
                     });
 
                     const file = Bun.file(filePath);
-                    return new Response(file)
+                    return new Response(file);
                 },
-            })
-            log.info(`Watching ${dirAbs}`);
+            });
+            logger.info(`Watching ${dirAbs}`);
             await watchProject(
                 {
                     rootDir: args.dir,
                     minify: args.minify,
                     debug: args.debug,
                 },
-                resolve(dirAbs, args.srcDir),
+                resolve(dirAbs, args.srcDir)
             );
-
         }
     )
     .demandCommand(1, "You need at least one command before moving on")
