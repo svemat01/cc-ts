@@ -1,31 +1,24 @@
-import { resolve, relative } from "node:path";
-import * as tstl from "@jackmacwindows/typescript-to-lua";
+import { resolve } from "node:path";
 
-import { Glob } from "bun";
-import { log } from './logger.ts';
-import { TranspilationError, transpileProjectFiles } from './transpiler.ts';
-import { bundleProjectFiles } from './bundler.ts';
-import { rm, watch, writeFile } from 'node:fs/promises';
+import { log } from "./logger.ts";
+import { TranspilationError, transpileProjectFiles } from "./transpiler.ts";
+import { watch } from "node:fs/promises";
+import { parseConfigFileWithSystem } from "@jackmacwindows/typescript-to-lua";
 
 export type BuildConfig = {
-    /** 
-     * Path to main project directory 
+    /**
+     * Path to main project directory
      * @default "."
-    */
+     */
     rootDir?: string;
 
     /**
-     * Path to extra lua files to include in the bundle
-     * @default "lua"
-     */
-    luaDir?: string;
-    /** 
      * Path to output directory relative to rootDir
      * @default "dist"
      */
     outDir?: string;
 
-    /** 
+    /**
      * Path to tsconfig.json relative to rootDir
      * @default "tsconfig.json"
      */
@@ -37,7 +30,6 @@ export type BuildConfig = {
 
 const defaultConfig: Required<BuildConfig> = {
     rootDir: ".",
-    luaDir: "lua",
     outDir: "dist",
 
     tsconfigPath: "tsconfig.json",
@@ -49,14 +41,10 @@ const defaultConfig: Required<BuildConfig> = {
 const checkGitIgnore = async (dir: string) => {
     const gitignorePath = resolve(dir, ".gitignore");
 
-    const shouldBeIgnored = [
-        ".ccts-builder",
-        "dist",
-    ];
+    const shouldBeIgnored = [".ccts-builder", "dist"];
 
     // Warn if the .gitignore file doesn't exist or doesn't contain the necessary lines
-    
-}
+};
 
 export const build = async (_config: BuildConfig) => {
     const config = {
@@ -64,58 +52,24 @@ export const build = async (_config: BuildConfig) => {
         ..._config,
     };
 
-
     const rootDir = resolve(process.cwd(), config.rootDir);
-    const outDir = resolve(rootDir, config.outDir);
-    const luaDir = resolve(rootDir, config.luaDir);
     const tsconfigPath = resolve(rootDir, config.tsconfigPath);
 
-    // Make temp .ccts-builder directory in rootDir
-    const tempDir = resolve(rootDir, ".ccts-builder/tstl-comp");
-
-    if (luaDir && luaDir !== tempDir) {
-        const glob = new Glob("**/*.lua");
-
-        for await (const filepath of glob.scan({
-            cwd: luaDir,
-        })) {
-            log.verbose(`Copying lua file: ${filepath}`)
-            const file = Bun.file(`${luaDir}/${filepath}`);
-            await Bun.write(`${tempDir}/${filepath}`, file);
-        }
-    }
+    const parseResult = parseConfigFileWithSystem(tsconfigPath);
 
     log.info(`Transpiling project`);
 
-    try {
-        await transpileProjectFiles(tsconfigPath, tempDir);
-    } catch (error) {
-        if (error instanceof TranspilationError) {
-            log.error(error.message)
-            console.log(error.getDiagnosticsString());
+    await transpileProjectFiles(parseResult).catch((err) => {
+        if (err instanceof TranspilationError) {
+            log.error(err.message);
+            console.log(err.getDiagnosticsString());
+            throw err;
         } else {
-            throw error;
+            throw err;
         }
-
-        return;
-    }
-
-    log.info(`Bundling project`);
-
-    await bundleProjectFiles({
-        srcDir: tempDir,
-        outDir,
-        minify: config.minify,
-        noEmit: false,
-    })
+    });
 
     log.info(`Done!`);
-
-    if (!config.debug) {
-        await rm(tempDir, {
-            recursive: true,
-        });
-    }
 };
 
 export const watchProject = async (config: BuildConfig, dir: string) => {
@@ -130,4 +84,4 @@ export const watchProject = async (config: BuildConfig, dir: string) => {
             console.error(err);
         });
     }
-}
+};

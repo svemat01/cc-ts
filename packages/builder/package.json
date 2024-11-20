@@ -12,13 +12,15 @@
     "@types/yargs": "^17.0.32"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@jackmacwindows/typescript-to-lua": "^1.16.1",
+    "@jackmacwindows/typescript-to-lua": "^1.22.0",
     "@lvksh/logger": "^1.6.4",
+    "enhanced-resolve": "^5.17.1",
     "kleur": "^4.1.5",
     "luamin": "^1.0.4",
+    "source-map": "^0.7.4",
     "yargs": "^17.7.2"
   },
   "publishConfig": {
