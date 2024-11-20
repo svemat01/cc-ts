@@ -16,11 +16,12 @@ const actions: AppAction[] = [
         path: "basic",
         dependencies: [],
         devDependencies: [
-            "@cc-ts/craftos-types",
+            "@jackmacwindows/craftos-types",
             "@jackmacwindows/cc-types",
             "@jackmacwindows/lua-types",
             "@jackmacwindows/typescript-to-lua",
             "@cc-ts/builder",
+            "typescript@^5.2.2",
         ],
     },
     {

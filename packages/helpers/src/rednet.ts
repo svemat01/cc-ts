@@ -1,10 +1,10 @@
 export function waitForResponse<Message extends {tx: string}>(tx: string, PROTOCOL: string, timeout: number = 30) {
     const startTime = os.epoch();
     while (true) {
-        const [senderId, message] = rednet.receive<Message>(PROTOCOL, 10);
+        const [senderId, message] = rednet.receive(PROTOCOL, 10);
 
         if (message?.tx === tx) {
-            return $multi(senderId ?? undefined, message);
+            return $multi(senderId ?? undefined, message as Message);
         }
 
         if (os.epoch() - startTime > timeout * 1000) {

@@ -9,7 +9,15 @@ import { execa } from 'execa';
  * @param targetDirectory The directory to initialize the project in
  */
 export const init = async (targetDirectory: string) => {
-    await $`bun init --yes`.cwd(targetDirectory);
+    await Bun.write(targetDirectory + '/package.json', JSON.stringify({
+        name: "my-app",
+        module: "src/index.ts",
+        type: "module",
+        devDependencies: {},
+        dependencies: {}
+    }, null, 2));
+    await Bun.write(targetDirectory + '/README.md', '# My App\n\nCreated with create-cc-ts');
+    await Bun.write(targetDirectory + '/.gitignore', 'node_modules/\n.DS_Store\ndist/\n.env');
 };
 
 const _addDependencies = async (

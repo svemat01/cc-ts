@@ -2,23 +2,22 @@
   "$schema": "https://raw.githubusercontent.com/MCJack123/TypeScriptToLua/master/tsconfig-schema.json",
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["ESNext"],
+    "lib": [ "ESNext" ],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": false,
     "strictNullChecks": true,
     "types": [
-      "@jackmacwindows/lua-types/cc",
-      "@cc-ts/craftos-types",
+      "@jackmacwindows/lua-types/cc-5.2",
+      "@jackmacwindows/craftos-types",
       "@jackmacwindows/cc-types"
     ],
     "outDir": "dist",
-    "declaration": true,
   },
   "tstl": {
-    "luaTarget": "CC",
+    "luaTarget": "CC-5.2",
     "luaLibImport": "require-minimal",
-    "buildMode": "library",
+    "buildMode": "default", // Default allows importing lua code from node_modules
   },
-  "include": ["src/**/*.ts"]
+  "include": [ "src/**/*.ts" ]
 }
