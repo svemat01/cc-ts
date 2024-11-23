@@ -29,8 +29,8 @@ const actions: AppAction[] = [
         exec: async (targetDirectory, _arguments) => {
             await extendPackageJson(targetDirectory, {
                 scripts: {
-                    build: "cc-ts build",
-                    dev: "cc-ts dev",
+                    build: "cc-ts",
+                    dev: "cc-ts --watch --serve",
                 },
             });
 

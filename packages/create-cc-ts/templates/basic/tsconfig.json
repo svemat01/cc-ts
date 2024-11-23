@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/MCJack123/TypeScriptToLua/master/tsconfig-schema.json",
+  "$schema": "https://raw.githubusercontent.com/svemat01/cc-ts/master/packages/builder/tsconfig-schema.json",
   "compilerOptions": {
     "target": "ESNext",
     "lib": [ "ESNext" ],

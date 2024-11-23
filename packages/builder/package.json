@@ -5,7 +5,7 @@
     "version": "0.1.0",
     "private": false,
     "bin": {
-        "cc-ts": "src/index.ts"
+        "cc-ts": "src/cc-ts.ts"
     },
     "devDependencies": {
         "@types/bun": "latest",

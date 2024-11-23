@@ -8,10 +8,12 @@ import {
     buildMinimalLualibBundle,
     findUsedLualibFeatures,
 } from "@cc-ts/typescript-to-lua/dist/LuaLib";
+import luamin from "luamin";
 
 import { formatPathToLuaPath, trimExtension } from "./utils";
 import { logger as baseLogger } from "./logger";
 import { version } from "../package.json";
+import type { CompilerOptions } from "./CompilerOptions";
 
 // Constants
 const hashPlaceholder = "{#Hash}";
@@ -102,8 +104,7 @@ export class CCBundler {
         const moduleLogger = this.logger.child({ moduleName });
         moduleLogger.debug("Bundling module");
 
-        const options =
-            this.program.getCompilerOptions() as tstl.CompilerOptions;
+        const options = this.program.getCompilerOptions() as CompilerOptions;
         const dependencies = this.moduleDependencies.get(moduleName) ?? [];
         const sourceDir = tstl.getSourceDir(this.program);
 
@@ -182,12 +183,18 @@ export class CCBundler {
             footers.push(`${sourceMapTracebackBundlePlaceholder}\n`);
         }
 
-        const sourceChunks = [
+        let sourceChunks = [
             requireOverride,
             moduleTable,
             ...footers,
             entryPoint,
         ];
+
+        if (options.minify) {
+            const code = this.joinSourceChunks(sourceChunks).toString();
+            sourceChunks = ["\n" + luamin.minify(code)];
+            moduleLogger.debug("Minified source");
+        }
 
         if (!options.noHeader) {
             moduleLogger.debug("Adding bundle header");

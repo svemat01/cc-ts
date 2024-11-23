@@ -1,0 +1,53 @@
+{
+    "title": "tsconfig.json with TSTL & CC-TS options",
+    "description": "JSON schema for the TypeScript compiler's configuration file with TSTL & CC-TS options",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "allOf": [
+        {
+            "$ref": "https://raw.githubusercontent.com/svemat01/cc-ts-tstl/refs/heads/master/tsconfig-schema.json"
+        }
+    ],
+    "properties": {
+        "cc-ts": {
+            "description": "CC-TS compiler options.",
+            "type": "object",
+            "definitions": {
+                "//": {
+                    "reference": "https://typescripttolua.github.io/docs/configuration#custom-options"
+                }
+            },
+            "properties": {
+                "builtInModules": {
+                    "description": "A list of built-in modules to include in the bundle.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "minify": {
+                    "description": "Minify the resulting Lua files.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "serve": {
+                    "description": "Serve the bundle over HTTP.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "servePort": {
+                    "description": "The port to serve the bundle on.",
+                    "type": "number",
+                    "default": 8080
+                },
+                "debug": {
+                    "description": "Enable debug mode.",
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "dependencies": {
+            }
+        }
+    },
+    "allowTrailingCommas": true
+}

@@ -5,6 +5,7 @@ import * as performance from "@cc-ts/typescript-to-lua/dist/measure-performance"
 import * as path from "node:path";
 import { CCBundler } from "./bundler";
 import { logger as _logger } from "./logger";
+import { validateOptions, type CompilerOptions } from "./CompilerOptions";
 
 export class TranspilationError extends Error {
     constructor(
@@ -93,11 +94,14 @@ export class CCTranspiler extends tstl.Transpiler {
     ): { emitPlan: tstl.EmitFile[] } {
         this.logger.debug("Starting emit plan construction");
         performance.startSection("getEmitPlan");
-        const options = program.getCompilerOptions() as tstl.CompilerOptions;
+        const options = program.getCompilerOptions() as CompilerOptions;
 
         if (options.tstlVerbose) {
             this.logger.trace("Verbose mode enabled");
         }
+
+        const ccOptionsDiagnostics = validateOptions(options);
+        diagnostics.push(...ccOptionsDiagnostics);
 
         this.logger.debug("Resolving dependencies");
         const resolutionResult = resolveDependencies(
