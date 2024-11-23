@@ -1,7 +1,7 @@
-import * as tstl from "@jackmacwindows/typescript-to-lua";
+import * as tstl from "@cc-ts/typescript-to-lua";
 import * as ts from "typescript";
-import { resolveDependencies } from "@jackmacwindows/typescript-to-lua/dist/transpilation/resolve";
-import * as performance from "@jackmacwindows/typescript-to-lua/dist/measure-performance";
+import { resolveDependencies } from "@cc-ts/typescript-to-lua/dist/transpilation/resolve";
+import * as performance from "@cc-ts/typescript-to-lua/dist/measure-performance";
 import * as path from "node:path";
 import { CCBundler } from "./bundler";
 import { logger as _logger } from "./logger";
@@ -128,7 +128,12 @@ export class CCTranspiler extends tstl.Transpiler {
         this.logger.info(`Processing ${files.length} files`);
         for (const file of files) {
             const fileName = path.resolve(sourceDir, file.fileName);
-            this.logger.trace("Bundling module", { fileName });
+            if (fileName.endsWith(".lib.ts")) {
+                this.logger.trace(`Skipping library file`, { fileName });
+                continue;
+            }
+
+            this.logger.trace(`Bundling module`, { fileName });
             const bundleResult = bundler.bundleModule(
                 bundler.createModulePath(fileName)
             );

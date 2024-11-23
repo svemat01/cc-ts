@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { logger } from "./logger.ts";
 import { TranspilationError, transpileProjectFiles } from "./transpiler.ts";
 import { watch } from "node:fs/promises";
-import { parseConfigFileWithSystem } from "@jackmacwindows/typescript-to-lua";
+import { parseConfigFileWithSystem } from "@cc-ts/typescript-to-lua";
 
 export type BuildConfig = {
     /**

@@ -13,6 +13,7 @@
       "@jackmacwindows/cc-types"
     ],
     "outDir": "dist",
+    "rootDir": "src",
     "declaration": true,
   },
   "tstl": {

@@ -1,13 +1,13 @@
 import { resolve, basename, relative } from "node:path";
-import * as tstl from "@jackmacwindows/typescript-to-lua";
+import * as tstl from "@cc-ts/typescript-to-lua";
 import * as ts from "typescript";
 import { SourceNode } from "source-map";
-import { findLuaRequires } from "@jackmacwindows/typescript-to-lua/dist/transpilation/find-lua-requires";
-import { normalizeSlashes } from "@jackmacwindows/typescript-to-lua/dist/utils";
+import { findLuaRequires } from "@cc-ts/typescript-to-lua/dist/transpilation/find-lua-requires";
+import { normalizeSlashes } from "@cc-ts/typescript-to-lua/dist/utils";
 import {
     buildMinimalLualibBundle,
     findUsedLualibFeatures,
-} from "@jackmacwindows/typescript-to-lua/dist/LuaLib";
+} from "@cc-ts/typescript-to-lua/dist/LuaLib";
 
 import { formatPathToLuaPath, trimExtension } from "./utils";
 import { logger as baseLogger } from "./logger";
