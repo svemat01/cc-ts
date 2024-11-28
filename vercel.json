@@ -1,22 +1,22 @@
 {
     "redirects": [
         {
-            "source": "/libraries/crpc/",
+            "source": "/libraries/crpc",
             "destination": "/modules/_cc-ts_crpc.html",
             "permanent": true
         },
         {
-            "source": "/libraries/helpers/",
+            "source": "/libraries/helpers",
             "destination": "/modules/_cc-ts_helpers.html",
             "permanent": true
         },
         {
-            "source": "/packages/builder/",
+            "source": "/packages/builder",
             "destination": "/modules/_cc-ts_builder.html",
             "permanent": true
         },
         {
-            "source": "/packages/create-cc-ts/",
+            "source": "/packages/create-cc-ts",
             "destination": "/modules/create-cc-ts.html",
             "permanent": true
         },
