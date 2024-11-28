@@ -7,7 +7,9 @@
     },
     "devDependencies": {
         "@moonrepo/cli": "^1.30.0",
-        "@types/bun": "latest"
+        "@types/bun": "latest",
+        "typedoc": "^0.27.1",
+        "typedoc-material-theme": "^1.2.0"
     },
     "peerDependencies": {
         "typescript": "^5.7.2"

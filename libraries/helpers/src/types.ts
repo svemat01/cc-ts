@@ -1,4 +1,42 @@
-type Side =
+/**
+ * @module types
+ * @description Core type definitions for ComputerCraft TypeScript events and interactions
+ *
+ * This module provides TypeScript type definitions for ComputerCraft's event system,
+ * peripheral interactions, and common data structures. It enables type-safe handling
+ * of ComputerCraft events and peripherals in TypeScript projects.
+ *
+ * @example Basic event handling
+ * ```typescript
+ * import { Events } from './types';
+ *
+ * // Type-safe event handling
+ * os.pullEvent<Events["mouse_click"]>("mouse_click").then(([button, x, y]) => {
+ *     console.log(`Mouse clicked at (${x}, ${y}) with button ${button}`);
+ * });
+ * ```
+ *
+ * @example Working with peripherals
+ * ```typescript
+ * import { Side } from './types';
+ *
+ * function attachMonitor(side: Side) {
+ *     const monitor = peripheral.wrap<Monitor>(side);
+ *     monitor.clear();
+ *     monitor.write("Hello World!");
+ * }
+ * ```
+ */
+
+/**
+ * Represents valid sides for peripheral attachment in ComputerCraft
+ *
+ * @example
+ * ```typescript
+ * const monitor = peripheral.wrap<Monitor>("top" as Side);
+ * ```
+ */
+export type Side =
     | "top"
     | "bottom"
     | "left"
@@ -6,15 +44,63 @@ type Side =
     | "front"
     | "back"
     | (string & {});
-type MouseButton = 1 | 2 | 3;
 
+/**
+ * Valid mouse button numbers in ComputerCraft
+ * - 1: Left click
+ * - 2: Right click
+ * - 3: Middle click
+ */
+export type MouseButton = 1 | 2 | 3;
+
+/**
+ * Represents a collection of transferred files from a file transfer event
+ *
+ * @example
+ * ```typescript
+ * os.pullEvent<Events["file_transfer"]>("file_transfer").then(([files]) => {
+ *     const transferredFiles = files.getFiles();
+ *     for (const file of transferredFiles) {
+ *         console.log(`Received file: ${file.getName()}`);
+ *     }
+ * });
+ * ```
+ */
 export type TransferredFiles = {
     getFiles: () => TransferredFile[];
 };
+
+/**
+ * Represents a single transferred file with read capabilities and metadata
+ */
 export type TransferredFile = ReadFileHandle & {
     getName: () => string;
 };
 
+/**
+ * Comprehensive mapping of all ComputerCraft events and their parameter types
+ *
+ * This interface provides type definitions for all built-in ComputerCraft events,
+ * enabling type-safe event handling in TypeScript. Each event is documented with
+ * its parameters and links to official ComputerCraft documentation.
+ *
+ * @example Using with os.pullEvent
+ * ```typescript
+ * async function handleMouseInput() {
+ *     const [button, x, y] = await os.pullEvent<Events["mouse_click"]>("mouse_click");
+ *     console.log(`Clicked at (${x}, ${y})`);
+ * }
+ * ```
+ *
+ * @example Type-safe event handling
+ * ```typescript
+ * function onRednetMessage([sender, message, protocol]: Events["rednet_message"]) {
+ *     if (protocol === "myProtocol") {
+ *         // Handle protocol-specific message
+ *     }
+ * }
+ * ```
+ */
 export interface Events {
     /**
      * @see https://tweaked.cc/event/alarm.html
