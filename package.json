@@ -3,7 +3,8 @@
     "module": "index.ts",
     "type": "module",
     "scripts": {
-        "publish": "moon ci :build && changeset publish"
+        "publish": "moon ci :build && changeset publish",
+        "docs": "moon run helpers:build && bun run buildDocs.ts"
     },
     "devDependencies": {
         "@moonrepo/cli": "^1.30.0",
