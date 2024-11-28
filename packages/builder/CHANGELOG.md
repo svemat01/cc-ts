@@ -1,5 +1,16 @@
 # @cc-ts/builder
 
+## 0.2.0
+
+### Minor Changes
+
+- 615b99e: Migrate to @cc-ts/typescript-to-lua
+- 04cdb59: Refactor cli and api
+
+### Patch Changes
+
+- 9535a18: Bump typescript & typescript to lua version
+
 ## 0.1.0
 
 ### Minor Changes
