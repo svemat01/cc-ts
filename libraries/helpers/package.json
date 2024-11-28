@@ -4,7 +4,6 @@
     "type": "module",
     "private": false,
     "scripts": {
-        "publish": "tstl && changeset publish",
         "build": "tstl",
         "clean-dist": "rm -rf dist",
         "dev": "tstl --watch --declarationMap"
