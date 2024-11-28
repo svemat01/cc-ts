@@ -1,22 +1,24 @@
 {
-  "name": "@cc-ts/root",
-  "module": "index.ts",
-  "type": "module",
-  "scripts": {
-    "publish": "moon ci :build && changeset publish"
-  },
-  "devDependencies": {
-    "@moonrepo/cli": "^1.21.4",
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.2.2"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "dependencies": {
-    "@changesets/cli": "^2.27.1"
-  },
-  "trustedDependencies": ["@moonrepo/cli"]
+    "name": "@cc-ts/root",
+    "module": "index.ts",
+    "type": "module",
+    "scripts": {
+        "publish": "moon ci :build && changeset publish"
+    },
+    "devDependencies": {
+        "@moonrepo/cli": "^1.30.0",
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.7.2"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "dependencies": {
+        "@changesets/cli": "^2.27.10"
+    },
+    "trustedDependencies": [
+        "@moonrepo/cli"
+    ]
 }
