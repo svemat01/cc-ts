@@ -1,5 +1,11 @@
 # @cc-ts/helpers
 
+## 0.2.1
+
+### Patch Changes
+
+- d1f67f9: Fix build
+
 ## 0.2.0
 
 ### Minor Changes
