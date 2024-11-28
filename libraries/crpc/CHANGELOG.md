@@ -1,5 +1,13 @@
 # @cc-ts/crpc
 
+## 0.0.3
+
+### Patch Changes
+
+- acf59f3: Fix build
+- Updated dependencies [acf59f3]
+  - @cc-ts/helpers@0.2.2
+
 ## 0.0.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @cc-ts/helpers
 
+## 0.2.2
+
+### Patch Changes
+
+- acf59f3: Fix build
+
 ## 0.2.1
 
 ### Patch Changes
