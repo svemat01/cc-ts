@@ -1,0 +1,9 @@
+platform: bun
+
+tasks:
+  build:
+    command: 'bun tstl'
+    inputs:
+      - 'src/**/*'
+    outputs:
+      - 'dist'
