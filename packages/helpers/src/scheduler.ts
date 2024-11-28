@@ -1,4 +1,4 @@
-import { pretty_print } from "cc.pretty";
+import { pretty } from "cc.pretty";
 import { Events } from "./types";
 
 class EventHandler<
@@ -89,12 +89,56 @@ export class EventManager<_Events extends Record<string, any[]>> {
                 },
                 check
             );
-            print("waiting for timeout", timeoutId);
             disableTimeout = osEvents.once(
                 "timer",
                 () => {
                     unsubscribe();
                     reject(`Event ${name as string} timed out`);
+                },
+                (id) => {
+                    return id === timeoutId;
+                }
+            );
+        });
+    }
+
+    public waitForAnyEvent<T extends keyof _Events>(
+        names: T[],
+        check: (event: T, ...args: _Events[T]) => boolean = () => true,
+        timeout: number = 0
+    ) {
+        return new Promise<[T, ..._Events[T]]>((_resolve, reject) => {
+            if (timeout <= 0) {
+                for (const name of names) {
+                    this.once(
+                        name,
+                        (...args) => _resolve([name, ...args]),
+                        (...args) => check(name, ...args)
+                    );
+                }
+
+                return;
+            }
+
+            const timeoutId = os.startTimer(timeout);
+
+            let disableTimeout: () => void;
+            let unsubscribe = names.map((name) =>
+                this.once(
+                    name,
+                    (...args) => {
+                        disableTimeout && disableTimeout();
+                        os.cancelTimer(timeoutId);
+                        _resolve([name, ...args]);
+                    },
+                    (...args) => check(name, ...args)
+                )
+            );
+            disableTimeout = osEvents.once(
+                "timer",
+                () => {
+                    unsubscribe.forEach((unsubscribe) => unsubscribe());
+                    reject(`Event ${names.join(", ")} timed out`);
                 },
                 (id) => {
                     return id === timeoutId;
@@ -142,6 +186,9 @@ export const once = osEvents.once.bind(osEvents) as typeof osEvents.once;
 export const waitForEvent = osEvents.waitForEvent.bind(
     osEvents
 ) as typeof osEvents.waitForEvent;
+export const waitForAnyEvent = osEvents.waitForAnyEvent.bind(
+    osEvents
+) as typeof osEvents.waitForAnyEvent;
 export const dispatch = osEvents.dispatch.bind(
     osEvents
 ) as typeof osEvents.dispatch;
@@ -152,17 +199,36 @@ export const asyncSleep = async (ms: number) => {
     return;
 };
 
+export const setTimeout = (func: () => void, ms: number) => {
+    asyncSleep(ms).then(func);
+};
+
+/**
+ * Used to make promises throw the errors instead of ignoring them
+ * @example
+ * ```ts
+ * await waitForEvent(...).catch(escalate);
+ * ```
+ */
+export const escalate = (error: unknown) => {
+    if (error instanceof Error) {
+        throw error;
+    }
+    throw new Error(`${error}`);
+};
+
 export const PANIC = (message: string, cause?: unknown) => {
     print("CTS | Panicking:", message);
     throw new Panic(message, { cause });
 };
 
-export const runOsEventLoop = (raw = false) => {
+export const runOsEventLoop = (raw = false, debug = false) => {
     print("CTS | Running OS event loop");
 
     let error: Error | undefined;
     while (!error) {
         const [event, ...args] = raw ? os.pullEventRaw() : os.pullEvent();
+        debug && print("CTS | Event:", event, pretty(args));
         dispatch(event, ...args).catch((err) => {
             error = err;
         });
