@@ -4,8 +4,8 @@
     "target": "ESNext",
     "lib": [ "ESNext" ],
     "module": "ESNext",
-    "moduleResolution": "node",
-    "strict": false,
+    "moduleResolution": "bundler",
+    "strict": true,
     "strictNullChecks": true,
     "types": [
       "@jackmacwindows/lua-types/cc",
@@ -14,6 +14,8 @@
     ],
     "outDir": "dist",
     "rootDir": "src",
+    "skipLibCheck": true,
+    "incremental": true,
     "declaration": true,
   },
   "tstl": {
