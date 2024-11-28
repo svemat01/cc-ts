@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/svemat01/cc-ts-tstl/master/tsconfig-schema.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": [ "ESNext" ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "types": [
+      "@jackmacwindows/lua-types/cc-5.2",
+      "@jackmacwindows/craftos-types",
+      "@jackmacwindows/cc-types"
+    ],
+    "outDir": "dist",
+    "rootDir": "src",
+    "skipLibCheck": true,
+    "incremental": true,
+    "declaration": true,
+  },
+  "tstl": {
+    "luaTarget": "CC-5.2",
+    "luaLibImport": "require-minimal", // Output a combined lua lib bundle, application will ideally use @cc-ts/builder and make their own bundle
+    "buildMode": "library", // Don't include node_modules in the output
+  },
+  "include": [ "src/**/*.ts" ]
+}

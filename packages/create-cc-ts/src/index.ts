@@ -1,40 +1,37 @@
 #!/bin/env bun
 
-import * as p from '@clack/prompts';
-import kleur from 'kleur';
-import { red } from 'kleur/colors';
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import * as p from "@clack/prompts";
+import kleur from "kleur";
+import { red } from "kleur/colors";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
-import { loadApps } from './utils/apps.js';
-import { showHelp } from './utils/help.js';
-import { exit, PromptError } from './utils/prompts.js';
-import { parseArgs } from 'util';
+import { loadApps } from "./utils/apps.js";
+import { showHelp } from "./utils/help.js";
+import { exit, PromptError } from "./utils/prompts.js";
+import { parseArgs } from "util";
 
-// const argv = minimist(process.argv.slice(2));
-console.log(parseArgs)
 const argv = parseArgs({
     args: process.argv.slice(2),
     options: {
         help: {
-            type: 'boolean',
-            alias: 'h',
+            type: "boolean",
+            alias: "h",
         },
         version: {
-            type: 'boolean',
-            alias: 'v',
+            type: "boolean",
+            alias: "v",
         },
     },
     allowPositionals: true,
 });
 
 export type ParsedArgs = typeof argv;
-console.log(argv);
 
 const apps = await loadApps();
 
 const packageJson = JSON.parse(
-    readFileSync(new URL('../package.json', import.meta.url).pathname, 'utf8')
+    readFileSync(new URL("../package.json", import.meta.url).pathname, "utf8")
 ) as {
     version: string;
 };
@@ -66,7 +63,7 @@ let [targetDirectory] = argv.positionals;
 
 console.log(kleur.dim(`create-cc-ts version ${packageJson.version}\n`));
 
-p.intro(kleur.bgCyan().black(' Create CC-TS '));
+p.intro(kleur.bgCyan().black(" Create CC-TS "));
 
 /**
  * ====================
@@ -76,26 +73,26 @@ p.intro(kleur.bgCyan().black(' Create CC-TS '));
 
 if (!targetDirectory) {
     const directory = await p.text({
-        message: 'Where should we create your project?',
-        placeholder: '  (hit Enter to use current directory)',
+        message: "Where should we create your project?",
+        placeholder: "  (hit Enter to use current directory)",
     });
 
-    if (p.isCancel(directory)) exit('Cancelled');
+    if (p.isCancel(directory)) exit("Cancelled");
 
-    targetDirectory = directory ? (directory as string) : '.';
+    targetDirectory = directory ? (directory as string) : ".";
 }
 
 targetDirectory = resolve(targetDirectory);
 
 if (existsSync(targetDirectory)) {
     const force = await p.confirm({
-        message: `${kleur.red('Directory not empty')}. Continue anyway?`,
+        message: `${kleur.red("Directory not empty")}. Continue anyway?`,
         initialValue: false,
     });
 
-    if (p.isCancel(force)) exit('Cancelled');
+    if (p.isCancel(force)) exit("Cancelled");
 
-    if (!force) exit('Cancelled', 0);
+    if (!force) exit("Cancelled", 0);
 }
 
 /**
@@ -105,14 +102,14 @@ if (existsSync(targetDirectory)) {
  */
 
 const selectedAppIndex = await p.select({
-    message: 'Select an app type',
+    message: "Select an app type",
     options: Object.entries(apps).map(([name, app]) => ({
         label: app.color?.(app.name) ?? app.name,
         value: name,
     })),
 });
 
-if (p.isCancel(selectedAppIndex)) exit('Cancelled');
+if (p.isCancel(selectedAppIndex)) exit("Cancelled");
 
 const selectedApp = apps[selectedAppIndex as string];
 
@@ -138,4 +135,4 @@ const outroText = await selectedApp
  * ====================
  */
 
-p.outro(outroText ?? kleur.green('Done!'));
+p.outro(outroText ?? kleur.green("Done!"));

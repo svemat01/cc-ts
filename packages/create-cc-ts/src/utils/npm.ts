@@ -1,23 +1,54 @@
 import { log, spinner } from "@clack/prompts";
 
 import { PromptError } from "./prompts.js";
-import { $ } from "bun";
-import { execa } from 'execa';
+import { execa } from "execa";
+import { mkdirp } from "./files.js";
+import { basename } from "node:path";
 
 /**
  * Initialize a new npm project
  * @param targetDirectory The directory to initialize the project in
  */
-export const init = async (targetDirectory: string) => {
-    await Bun.write(targetDirectory + '/package.json', JSON.stringify({
-        name: "my-app",
-        module: "src/index.ts",
-        type: "module",
-        devDependencies: {},
-        dependencies: {}
-    }, null, 2));
-    await Bun.write(targetDirectory + '/README.md', '# My App\n\nCreated with create-cc-ts');
-    await Bun.write(targetDirectory + '/.gitignore', 'node_modules/\n.DS_Store\ndist/\n.env');
+export const initNPMProject = async (targetDirectory: string) => {
+    await mkdirp(targetDirectory);
+
+    const name = basename(targetDirectory);
+    const prettyName = name
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase());
+
+    await Bun.write(
+        targetDirectory + "/package.json",
+        JSON.stringify(
+            {
+                name,
+                module: "src/index.ts",
+                type: "module",
+                devDependencies: {},
+                dependencies: {},
+            },
+            null,
+            2
+        )
+    );
+
+    await Bun.write(
+        targetDirectory + "/README.md",
+        /* markdown */ `# ${prettyName}
+
+Created with [create-cc-ts](https://github.com/svemat01/cc-ts/tree/master/packages/create-cc-ts)
+`
+    );
+    await Bun.write(
+        targetDirectory + "/.gitignore",
+        // "node_modules/\n.DS_Store\ndist/\n.env"
+        `node_modules/
+.DS_Store
+dist/
+.env
+.npmrc
+`
+    );
 };
 
 const _addDependencies = async (
@@ -27,57 +58,11 @@ const _addDependencies = async (
 ) => {
     return await execa(
         "bun",
-        [
-            "add",
-            saveAs === "dependencies" ? "" : "--dev",
-            ...dependencies,
-        ],
+        ["add", saveAs === "dependencies" ? "" : "--dev", ...dependencies],
         {
             cwd: targetDirectory,
         }
     );
-    // log.info(`bun add ${saveAs === 'dependencies' ? '' : '--dev'} ${dependencies.join(' ')}`)
-    // return await $`bun add ${saveAs === 'dependencies' ? '' : '--dev'} ${dependencies.join(' ')}`.cwd(targetDirectory).quiet();
-    // switch (packageMangager) {
-    //     case 'pnpm':
-    //         return await execa(
-    //             'pnpm',
-    //             [
-    //                 'install',
-    //                 saveAs === 'dependencies' ? '--save' : '--save-dev',
-    //                 ...dependencies,
-    //             ],
-    //             {
-    //                 cwd: targetDirectory,
-    //             }
-    //         );
-
-    //     case 'yarn':
-    //         return await execa(
-    //             'yarn',
-    //             [
-    //                 'add',
-    //                 saveAs === 'devDependencies' ? '--dev' : '',
-    //                 ...dependencies,
-    //             ],
-    //             {
-    //                 cwd: targetDirectory,
-    //             }
-    //         );
-
-    //     case 'npm':
-    //         return await execa(
-    //             'npm',
-    //             [
-    //                 'install',
-    //                 saveAs === 'devDependencies' ? '--save-dev' : '--save',
-    //                 ...dependencies,
-    //             ],
-    //             {
-    //                 cwd: targetDirectory,
-    //             }
-    //         );
-    // }
 };
 
 /**
@@ -144,7 +129,6 @@ export const extendPackageJson = async (
     data: Record<string, unknown>
 ) => {
     const packageJsonFile = Bun.file(`${targetDirectory}/package.json`);
-    console.log(packageJsonFile);
 
     const packageJson = await packageJsonFile.json();
 

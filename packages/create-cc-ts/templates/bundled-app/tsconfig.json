@@ -6,18 +6,24 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
-    "strictNullChecks": true,
     "types": [
       "@jackmacwindows/lua-types/cc-5.2",
       "@jackmacwindows/craftos-types",
       "@jackmacwindows/cc-types"
     ],
     "outDir": "dist",
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "skipLibCheck": true,
+    "incremental": true,
   },
   "tstl": {
     "luaTarget": "CC-5.2",
     "luaLibImport": "require-minimal",
     "buildMode": "default", // Default allows importing lua code from node_modules
   },
-  "include": [ "src/**/*.ts", "src/**/*.lua" ]
+  "cc-ts": {
+    "minify": false,
+  },
+  "include": [ "src/**/*.ts" ]
 }

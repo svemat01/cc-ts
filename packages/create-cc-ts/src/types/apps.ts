@@ -1,6 +1,6 @@
-import kleur from 'kleur';
-import type { ParsedArgs } from '..';
-import type { $, Shell, ShellPromise } from 'bun';
+import kleur from "kleur";
+import type { ParsedArgs } from "..";
+import type { $, Shell, ShellPromise } from "bun";
 
 export type AppExec = (
     targetDirectory: string,
@@ -24,27 +24,37 @@ export type BasicAppVariant = {
 
 export type AppAction =
     | {
-          type: 'files';
+          type: "template";
           /**
            * Path to template files relative to the templates directory
            */
           path: string;
-          dependencies?: string[];
-          devDependencies?: string[];
       }
     | {
-          type: 'command';
+          type: "npm";
+          /**
+           * NPM dependencies to add
+           */
+          dependencies?: string[];
+          devDependencies?: string[];
+          /**
+           * Extend the package.json file in the target directory
+           */
+          extendPackageJson?: Record<string, unknown>;
+      }
+    | {
+          type: "command";
           /**
            * Command to run
            * @example 'npm create svelte@next'
            */
           command: () => ShellPromise;
-      
+
           startMsg: string;
           stopMsg: string;
       }
     | {
-          type: 'exec';
+          type: "exec";
           /**
            * Function to run
            * @example (targetDirectory, arguments_) => { ... }
