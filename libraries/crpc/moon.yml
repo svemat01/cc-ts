@@ -1,9 +1,12 @@
 platform: bun
+language: typescript
 
 tasks:
   build:
-    command: 'bun tstl'
+    command: "bun tstl"
     inputs:
-      - 'src/**/*'
+      - "src/**/*"
     outputs:
-      - 'dist'
+      - "dist"
+    deps:
+      - "^:build"
