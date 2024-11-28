@@ -221,7 +221,7 @@ export interface Events {
      */
     websocket_success: [
         url: /** The URL of the WebSocket that received the message */ string,
-        response: /** The successful HTTP response */ HTTPResponse
+        response: /** The successful WebSocket */ WebSocket
     ];
     [key: string & {}]: any[];
 }
