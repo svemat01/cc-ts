@@ -8,6 +8,13 @@ export interface CCTSOptions {
     serve?: boolean;
     servePort?: number;
     debug?: boolean;
+    extraPaths?: string[];
+    /**
+     * Glob patterns for files to exclude from being treated as entry points.
+     * Files matching these patterns will still be included when imported by other modules.
+     * Example: ["\*\*\/*.lib.ts", "src/utils/**"]
+     */
+    ignoreAsEntryPoint?: string[];
 }
 
 export type CompilerOptions = TSTLOptions &
@@ -26,8 +33,25 @@ export function validateOptions(options: CompilerOptions): ts.Diagnostic[] {
         diagnostics.push(diagnosticFactories.serveRequiresWatch());
     }
 
+    // Validate excludeFromBundle is an array of strings if provided
+    if (
+        options.ignoreAsEntryPoint !== undefined &&
+        (!Array.isArray(options.ignoreAsEntryPoint) ||
+            options.ignoreAsEntryPoint.some(
+                (pattern) => typeof pattern !== "string"
+            ))
+    ) {
+        diagnostics.push(diagnosticFactories.invalidIgnoreAsEntryPoint());
+    }
+
     return diagnostics;
 }
+
+/**
+ * Default patterns to exclude from being built as separate entry points.
+ * These patterns will still be included if imported by other modules.
+ */
+export const DEFAULT_IGNORE_AS_ENTRY_POINT = ["**/*.lib.ts"];
 
 const DEFAULT_BUILT_IN_MODULES = [
     "cc.audio.dfpwm",

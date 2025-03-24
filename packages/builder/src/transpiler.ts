@@ -5,7 +5,12 @@ import * as performance from "@cc-ts/typescript-to-lua/dist/measure-performance"
 import * as path from "node:path";
 import { CCBundler } from "./bundler";
 import { logger as _logger } from "./logger";
-import { validateOptions, type CompilerOptions } from "./CompilerOptions";
+import {
+    validateOptions,
+    type CompilerOptions,
+    DEFAULT_IGNORE_AS_ENTRY_POINT,
+} from "./CompilerOptions";
+import { Glob } from "bun";
 
 export class TranspilationError extends Error {
     constructor(
@@ -126,14 +131,24 @@ export class CCTranspiler extends tstl.Transpiler {
         const bundler = new CCBundler(
             resolutionResult.resolvedFiles,
             program,
-            this.emitHost
+            this.emitHost,
+            diagnostics
         );
 
         this.logger.info(`Processing ${files.length} files`);
+        const ignorePatterns = (
+            options.ignoreAsEntryPoint || DEFAULT_IGNORE_AS_ENTRY_POINT
+        ).map((pattern) => new Glob(pattern));
         for (const file of files) {
             const fileName = path.resolve(sourceDir, file.fileName);
-            if (fileName.endsWith(".lib.ts")) {
-                this.logger.trace(`Skipping library file`, { fileName });
+
+            // Check if file should be ignored as an entry point
+            const shouldIgnore = ignorePatterns.some((pattern) => {
+                return pattern.match(fileName);
+            });
+
+            if (shouldIgnore) {
+                this.logger.trace(`Skipping file as entry point`, { fileName });
                 continue;
             }
 
@@ -141,7 +156,9 @@ export class CCTranspiler extends tstl.Transpiler {
             const bundleResult = bundler.bundleModule(
                 bundler.createModulePath(fileName)
             );
-            emitPlan.push(bundleResult);
+            if (bundleResult) {
+                emitPlan.push(bundleResult);
+            }
         }
 
         this.logger.debug("Emit plan construction completed");

@@ -14,6 +14,7 @@ import { formatPathToLuaPath, trimExtension } from "./utils";
 import { logger as baseLogger } from "./logger";
 import { version } from "../package.json";
 import type { CompilerOptions } from "./CompilerOptions";
+import { entryModuleNotFound, moduleNotFound } from "./diagnostics";
 
 // Constants
 const hashPlaceholder = "{#Hash}";
@@ -62,7 +63,8 @@ export class CCBundler {
     constructor(
         private files: tstl.ProcessedFile[],
         private program: ts.Program,
-        protected emitHost: tstl.EmitHost
+        protected emitHost: tstl.EmitHost,
+        protected diagnostics: ts.Diagnostic[]
     ) {
         this.logger.debug("Initializing CCBundler", {
             fileCount: files.length,
@@ -91,8 +93,11 @@ export class CCBundler {
     }
 
     public isBuiltInModule(moduleName: string) {
+        const options = this.program.getCompilerOptions() as CompilerOptions;
         const isBuiltIn =
-            moduleName.startsWith("cc.") || moduleName === "lualib_bundle";
+            moduleName.startsWith("cc.") ||
+            moduleName === "lualib_bundle" ||
+            (options.builtInModules ?? []).includes(moduleName);
         this.logger.trace("Checking if module is built-in", {
             moduleName,
             isBuiltIn,
@@ -112,8 +117,8 @@ export class CCBundler {
         moduleLogger.debug("Looking up entry file");
         const entryFile = this.modules.get(moduleName);
         if (!entryFile) {
-            moduleLogger.error("Entry module not found");
-            throw new Error(`Module ${moduleName} not found`);
+            this.diagnostics.push(entryModuleNotFound(moduleName));
+            return;
         }
 
         const files = [entryFile];
@@ -135,10 +140,8 @@ export class CCBundler {
 
             const file = this.modules.get(dependency);
             if (!file) {
-                moduleLogger.error("Dependency module not found", {
-                    dependency,
-                });
-                throw new Error(`Module ${dependency} not found`);
+                this.diagnostics.push(moduleNotFound(dependency, true));
+                return;
             }
             this.logger.trace("Adding dependency to bundle", { dependency });
             files.push(file);
@@ -185,11 +188,27 @@ export class CCBundler {
         }
 
         let sourceChunks = [
+            options.extraPaths &&
+                options.extraPaths.length > 0 &&
+                /* lua */ `
+local ____defaultPath = package.path
+package.path = ____defaultPath.."${options
+                    .extraPaths!.map(
+                        (path) => `;${path}/?.lua;${path}/?/init.lua`
+                    )
+                    .join("")}"
+            `,
             requireOverride,
             moduleTable,
             ...footers,
-            entryPoint,
-        ];
+            options.extraPaths && options.extraPaths.length > 0
+                ? /* lua */ `
+local ____export = require(${tstl.escapeString(moduleName)}, ...)
+package.path = ____defaultPath
+return ____export
+`
+                : entryPoint,
+        ].filter((chunk) => chunk !== undefined && chunk !== false);
 
         if (options.minify) {
             const code = this.joinSourceChunks(sourceChunks).toString();
@@ -307,8 +326,9 @@ export class CCBundler {
                 );
                 return new Set();
             }
-            moduleLogger.error("Module not found");
-            throw new Error(`Module ${moduleName} not found`);
+
+            this.diagnostics.push(moduleNotFound(moduleName, false));
+            return new Set();
         }
 
         if (this.moduleDependencies.has(moduleName)) {

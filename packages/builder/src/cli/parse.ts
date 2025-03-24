@@ -1,7 +1,7 @@
 import * as ts from "typescript";
 import * as cliDiagnostics from "@cc-ts/typescript-to-lua/dist/cli/diagnostics";
 import * as tstl from "@cc-ts/typescript-to-lua";
-import type { CompilerOptions } from "../CompilerOptions";
+import type { CCTSOptions, CompilerOptions } from "../CompilerOptions";
 import type { ParsedCommandLine as TstlParsedCommandLine } from "@cc-ts/typescript-to-lua";
 
 export interface ParsedCommandLine extends TstlParsedCommandLine {
@@ -9,7 +9,6 @@ export interface ParsedCommandLine extends TstlParsedCommandLine {
 }
 
 interface CommandLineOptionBase {
-    name: string;
     aliases?: string[];
     description: string;
 }
@@ -25,43 +24,55 @@ interface CommandLineOptionOfPrimitive extends CommandLineOptionBase {
 
 type CommandLineOption = CommandLineOptionOfEnum | CommandLineOptionOfPrimitive;
 
-export const optionDeclarations: CommandLineOption[] = [
-    {
-        name: "minify",
+export const optionDeclarations = {
+    minify: {
         description: "Minify the resulting Lua files.",
         type: "boolean",
     },
-    {
-        name: "builtInModules",
+    builtInModules: {
         description: "A list of built-in modules to include in the bundle.",
         type: "array",
     },
-    {
-        name: "serve",
+    serve: {
         description: "Serve the bundle over HTTP.",
         type: "boolean",
     },
-    {
-        name: "servePort",
+    servePort: {
         description: "The port to serve the bundle on.",
         type: "number",
         aliases: ["sp"],
     },
-    {
-        name: "debug",
+    debug: {
         description: "Enable debug mode.",
         type: "boolean",
     },
-];
+    extraPaths: {
+        description: "A list of extra paths to include in the bundle.",
+        type: "array",
+    },
+    ignoreAsEntryPoint: {
+        description: "A list of files to ignore as entry points.",
+        type: "array",
+    },
+} satisfies Record<keyof CCTSOptions, CommandLineOption>;
+
+// lookup of alias to option name
+const optionAliasLookup: Record<string, string> = {};
+for (const [name, option] of Object.entries(optionDeclarations)) {
+    if ("aliases" in option && option.aliases) {
+        for (const alias of option.aliases) {
+            optionAliasLookup[alias] = name;
+        }
+    }
+}
 
 export function updateParsedConfigFile(
     parsedConfigFile: ts.ParsedCommandLine
 ): ParsedCommandLine {
     let hasRootLevelOptions = false;
     for (const [name, rawValue] of Object.entries(parsedConfigFile.raw)) {
-        const option = optionDeclarations.find(
-            (option) => option.name === name
-        );
+        const option =
+            optionDeclarations[name as keyof typeof optionDeclarations];
         if (!option) continue;
 
         if (parsedConfigFile.raw["cc-ts"] === undefined)
@@ -82,9 +93,8 @@ export function updateParsedConfigFile(
         for (const [name, rawValue] of Object.entries(
             parsedConfigFile.raw["cc-ts"]
         )) {
-            const option = optionDeclarations.find(
-                (option) => option.name === name
-            );
+            const option =
+                optionDeclarations[name as keyof typeof optionDeclarations];
             if (!option) {
                 parsedConfigFile.errors.push(
                     cliDiagnostics.unknownCompilerOption(name)
@@ -94,6 +104,7 @@ export function updateParsedConfigFile(
 
             const { error, value } = readValue(
                 option,
+                name,
                 rawValue,
                 OptionSource.TsConfig
             );
@@ -118,18 +129,18 @@ function updateParsedCommandLine(
         if (!args[i].startsWith("-")) continue;
 
         const isShorthand = !args[i].startsWith("--");
-        const argumentName = args[i].substring(isShorthand ? 1 : 2);
-        const option = optionDeclarations.find((option) => {
-            if (option.name.toLowerCase() === argumentName.toLowerCase())
-                return true;
-            if (isShorthand && option.aliases) {
-                return option.aliases.some(
-                    (a) => a.toLowerCase() === argumentName.toLowerCase()
-                );
-            }
-
-            return false;
-        });
+        const argumentName = args[i]
+            .substring(isShorthand ? 1 : 2)
+            .toLowerCase();
+        const option =
+            optionDeclarations[
+                argumentName as keyof typeof optionDeclarations
+            ] ??
+            optionDeclarations[
+                optionAliasLookup[
+                    argumentName
+                ] as keyof typeof optionDeclarations
+            ];
 
         if (option) {
             // Ignore errors caused by ccts specific compiler options
@@ -145,10 +156,11 @@ function updateParsedCommandLine(
 
             const { error, value, consumed } = readCommandLineArgument(
                 option,
+                argumentName,
                 args[i + 1]
             );
             if (error) parsedCommandLine.errors.push(error);
-            parsedCommandLine.options[option.name] = value;
+            parsedCommandLine.options[argumentName] = value;
             if (consumed) {
                 // Values of custom options are parsed as a file name, exclude them
                 parsedCommandLine.fileNames =
@@ -169,6 +181,7 @@ interface CommandLineArgument extends ReadValueResult {
 
 function readCommandLineArgument(
     option: CommandLineOption,
+    name: string,
     value: any
 ): CommandLineArgument {
     if (option.type === "boolean") {
@@ -182,14 +195,14 @@ function readCommandLineArgument(
 
     if (value === undefined) {
         return {
-            error: cliDiagnostics.compilerOptionExpectsAnArgument(option.name),
+            error: cliDiagnostics.compilerOptionExpectsAnArgument(name),
             value: undefined,
             consumed: false,
         };
     }
 
     return {
-        ...readValue(option, value, OptionSource.CommandLine),
+        ...readValue(option, name, value, OptionSource.CommandLine),
         consumed: true,
     };
 }
@@ -206,6 +219,7 @@ interface ReadValueResult {
 
 function readValue(
     option: CommandLineOption,
+    name: string,
     value: unknown,
     source: OptionSource
 ): ReadValueResult {
@@ -218,7 +232,7 @@ function readValue(
                 return {
                     value: undefined,
                     error: cliDiagnostics.compilerOptionRequiresAValueOfType(
-                        option.name,
+                        name,
                         option.type
                     ),
                 };
@@ -233,7 +247,7 @@ function readValue(
                 return {
                     value: undefined,
                     error: cliDiagnostics.compilerOptionRequiresAValueOfType(
-                        option.name,
+                        name,
                         "number"
                     ),
                 };
@@ -254,7 +268,7 @@ function readValue(
                 return {
                     value: undefined,
                     error: cliDiagnostics.compilerOptionRequiresAValueOfType(
-                        option.name,
+                        name,
                         option.type
                     ),
                 };
@@ -276,7 +290,7 @@ function readValue(
                     return {
                         value: undefined,
                         error: cliDiagnostics.compilerOptionRequiresAValueOfType(
-                            option.name,
+                            name,
                             option.type
                         ),
                     };
@@ -289,7 +303,7 @@ function readValue(
                 return {
                     value: undefined,
                     error: cliDiagnostics.compilerOptionCouldNotParseJson(
-                        option.name,
+                        name,
                         e.message
                     ),
                 };
@@ -300,7 +314,7 @@ function readValue(
                 return {
                     value: undefined,
                     error: cliDiagnostics.compilerOptionRequiresAValueOfType(
-                        option.name,
+                        name,
                         "string"
                     ),
                 };
@@ -314,7 +328,7 @@ function readValue(
                 return {
                     value: undefined,
                     error: cliDiagnostics.argumentForOptionMustBe(
-                        `--${option.name}`,
+                        `--${name}`,
                         optionChoices
                     ),
                 };

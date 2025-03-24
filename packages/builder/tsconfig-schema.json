@@ -43,10 +43,23 @@
                     "description": "Enable debug mode.",
                     "type": "boolean",
                     "default": false
+                },
+                "extraPaths": {
+                    "description": "A list of extra paths to include in the bundle.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ignoreAsEntryPoint": {
+                    "description": "A list of files to ignore as entry points.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
-            "dependencies": {
-            }
+            "dependencies": {}
         }
     },
     "allowTrailingCommas": true

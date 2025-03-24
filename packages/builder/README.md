@@ -2,6 +2,8 @@
 
 A powerful bundler and build tool for ComputerCraft TypeScript projects. The builder helps you compile, bundle, and serve TypeScript code for ComputerCraft computers.
 
+> **Note:** The builder requires [Bun](https://bun.sh/) to run.
+
 ## Features
 
 -   🎯 TypeScript to Lua compilation optimized for ComputerCraft
@@ -134,6 +136,20 @@ Specify built-in modules that should not be resolved and bundled:
     }
 }
 ```
+
+### Ignoring Files as Entry Points
+
+Specify which files should be ignored as entry points using glob patterns:
+
+```json
+{
+    "cc-ts": {
+        "ignoreAsEntryPoint": ["**/*.lib.ts", "src/utils/**"]
+    }
+}
+```
+
+Files matching these patterns will still be included when imported by other modules, but won't be built as standalone entry points. This is useful for utility libraries, shared code, and similar files.
 
 ### Minification
 
