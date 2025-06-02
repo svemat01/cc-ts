@@ -1,4 +1,4 @@
-#!/bin/env bun
+#!/usr/bin/env bun
 
 import * as p from "@clack/prompts";
 import kleur from "kleur";
