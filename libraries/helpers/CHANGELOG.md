@@ -1,5 +1,11 @@
 # @cc-ts/helpers
 
+## 0.3.0
+
+### Minor Changes
+
+- 7c34e54: Introduce otel helpers
+
 ## 0.2.2
 
 ### Patch Changes
