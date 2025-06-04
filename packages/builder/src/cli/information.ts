@@ -20,9 +20,9 @@ export function getHelpString(): string {
     let result = helpString + "\n\n";
 
     result += "Options:\n";
-    for (const option of optionDeclarations) {
+    for (const [name, option] of Object.entries(optionDeclarations)) {
         const aliasStrings = (option.aliases ?? []).map((a) => "-" + a);
-        const optionString = [...aliasStrings, "--" + option.name].join("|");
+        const optionString = [...aliasStrings, "--" + name].join("|");
 
         const valuesHint =
             option.type === "enum" ? option.choices.join("|") : option.type;

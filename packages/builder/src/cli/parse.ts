@@ -24,7 +24,7 @@ interface CommandLineOptionOfPrimitive extends CommandLineOptionBase {
 
 type CommandLineOption = CommandLineOptionOfEnum | CommandLineOptionOfPrimitive;
 
-export const optionDeclarations = {
+export const optionDeclarations: Record<keyof CCTSOptions, CommandLineOption> = {
     minify: {
         description: "Minify the resulting Lua files.",
         type: "boolean",
@@ -54,7 +54,7 @@ export const optionDeclarations = {
         description: "A list of files to ignore as entry points.",
         type: "array",
     },
-} satisfies Record<keyof CCTSOptions, CommandLineOption>;
+};
 
 // lookup of alias to option name
 const optionAliasLookup: Record<string, string> = {};
