@@ -23,5 +23,6 @@
     "luaLibImport": "require-minimal",
     "buildMode": "library",
   },
+  "exclude": [ "src/**/examples/**"],
   "include": [ "src/**/*.ts" ]
 }
