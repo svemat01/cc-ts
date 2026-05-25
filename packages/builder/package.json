@@ -8,7 +8,8 @@
         "cc-ts": "src/cc-ts.ts"
     },
     "scripts": {
-        "test": "bun test"
+        "test": "bun test --preload ./test/setup.ts",
+        "test:update-snapshots": "bun test --preload ./test/setup.ts --update-snapshots"
     },
     "devDependencies": {
         "@types/bun": "latest",
