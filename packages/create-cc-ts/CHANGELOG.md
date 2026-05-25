@@ -1,5 +1,12 @@
 # create-cc-ts
 
+## 0.2.2
+
+### Patch Changes
+
+- e249e00: Update bundled-app template to include the new `reproducible` option in tsconfig.
+- 510f60a: Expand `@cc-ts/builder` into a more capable build system with dependency analysis, external runtime rules, copied Lua runtime support, reproducible bundle headers, improved publish surface, and better watch-mode invalidation.
+
 ## 0.2.1
 
 ### Patch Changes

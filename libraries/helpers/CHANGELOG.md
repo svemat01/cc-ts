@@ -1,5 +1,18 @@
 # @cc-ts/helpers
 
+## 0.4.0
+
+### Minor Changes
+
+- e249e00: Add integration types for Create mod peripherals, Advanced Math (matrix/quaternion/PID), Aeronautics sensors, CC: Sable physics, and CC Sable sublevels. Import the new modules to augment peripheral and event types.
+- e249e00: Restructure module layout: scheduler and types moved to `core/`, utilities moved to `utils/`. Update imports accordingly (e.g. `@cc-ts/helpers/core/scheduler`, `@cc-ts/helpers/utils/sandcorn`).
+
+### Patch Changes
+
+- Updated dependencies [04c3347]
+- Updated dependencies [e249e00]
+  - @cc-ts/craftos-types@0.1.0
+
 ## 0.3.0
 
 ### Minor Changes
