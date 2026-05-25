@@ -1,5 +1,18 @@
 # @cc-ts/builder
 
+## 0.4.0
+
+### Minor Changes
+
+- e249e00: Add dependency analysis with `--analyze`, `--analyze-format`, `--analyze-output`, and `--explain` flags. Analysis reports entrypoints, bundled vs external dependencies, and copied files. Supports text and JSON output for CI or tooling integration.
+- e249e00: Add `externals` option for configuring external module handling. Supports `builtin`, `external`, and `copy` modes with optional `outDir` and `reason` fields. External rules allow marking Node builtins, runtime-provided modules, or copying Lua runtime files into the output directory.
+- 510f60a: Expand `@cc-ts/builder` into a more capable build system with dependency analysis, external runtime rules, copied Lua runtime support, reproducible bundle headers, improved publish surface, and better watch-mode invalidation.
+- e249e00: Add `reproducible` option to strip volatile metadata (timestamps, build hashes) from bundle headers for deterministic output.
+
+### Patch Changes
+
+- e249e00: Emit warnings instead of throwing for non-fatal issues such as unresolved JavaScript packages and Node builtins. New diagnostics cover invalid `explain`/`externals`/`analyzeFormat` values and minify+sourceMap incompatibility.
+
 ## 0.3.0
 
 ### Minor Changes
