@@ -29,6 +29,21 @@
                     "type": "boolean",
                     "default": false
                 },
+                "analyze": {
+                    "description": "Print a dependency analysis report after a build.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "analyzeFormat": {
+                    "description": "Format for dependency analysis output.",
+                    "type": "string",
+                    "enum": ["text", "json"],
+                    "default": "text"
+                },
+                "analyzeOutput": {
+                    "description": "Write dependency analysis output to a file.",
+                    "type": "string"
+                },
                 "serve": {
                     "description": "Serve the bundle over HTTP.",
                     "type": "boolean",
@@ -51,12 +66,48 @@
                         "type": "string"
                     }
                 },
+                "explain": {
+                    "description": "Specific modules to explain in the analysis output.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "externals": {
+                    "description": "Rules for marking dependencies as built-in, runtime-external, or copied into the output directory.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["pattern"],
+                        "properties": {
+                            "pattern": {
+                                "type": "string"
+                            },
+                            "mode": {
+                                "type": "string",
+                                "enum": ["builtin", "external", "copy"]
+                            },
+                            "outDir": {
+                                "type": "string"
+                            },
+                            "reason": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                },
                 "ignoreAsEntryPoint": {
                     "description": "A list of files to ignore as entry points.",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "reproducible": {
+                    "description": "Remove volatile metadata such as build timestamps from bundle headers.",
+                    "type": "boolean",
+                    "default": false
                 }
             },
             "dependencies": {}

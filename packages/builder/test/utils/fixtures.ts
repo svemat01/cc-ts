@@ -42,3 +42,25 @@ export const createCliBuildProjectFiles = (): ProjectFiles => ({
     "src/main.ts":
         'import { value } from "./shared/value";\nexport default value;\n',
 });
+
+export const createExternalRuntimeProjectFiles = (): ProjectFiles => ({
+    "tsconfig.json": toJson(
+        createTestTsConfig({
+            ccTs: {
+                externals: [
+                    {
+                        pattern: "runtime.lib",
+                        mode: "copy",
+                        outDir: "vendor",
+                    },
+                ],
+                analyze: true,
+                reproducible: true,
+            },
+        })
+    ),
+    "src/runtime.lib.lua": 'return { value = "runtime" }\n',
+    "src/runtime.lib.d.ts": 'declare const runtime: { value: string }; export = runtime;\n',
+    "src/main.ts":
+        'import runtime from "./runtime.lib";\nexport default runtime.value;\n',
+});

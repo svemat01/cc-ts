@@ -139,8 +139,28 @@ describe("validateOptions", () => {
             watch: true,
             serve: true,
             ignoreAsEntryPoint: ["src/generated/**"],
+            explain: ["fs"],
+            externals: [{ pattern: "fs", mode: "builtin" }],
+            analyzeFormat: "json",
         } as any);
 
         expect(diagnostics).toHaveLength(0);
+    });
+
+    test("reports invalid analysis and external rule options", () => {
+        const diagnostics = validateOptions({
+            explain: ["fs", 1],
+            externals: [{ mode: "builtin" }],
+            analyzeFormat: "yaml",
+            minify: true,
+            sourceMap: true,
+        } as any);
+
+        expect(diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
+            90006,
+            90007,
+            90009,
+            90008,
+        ]);
     });
 });
