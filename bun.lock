@@ -74,6 +74,10 @@
         "typescript": "^5.7.2",
       },
     },
+    "packages/craftos-types": {
+      "name": "@cc-ts/craftos-types",
+      "version": "0.0.1",
+    },
     "packages/create-cc-ts": {
       "name": "create-cc-ts",
       "version": "0.2.1",
@@ -97,6 +101,8 @@
     "@babel/runtime": ["@babel/runtime@7.26.0", "", { "dependencies": { "regenerator-runtime": "^0.14.0" } }, "sha512-FDSOghenHTiToteC/QRlv2q3DhPZ/oOXTBoirfWNx1Cx3TMVcGWQtMMmQcSvb/JjpNeGzx8Pq/b4fKEJuWm1sw=="],
 
     "@cc-ts/builder": ["@cc-ts/builder@workspace:packages/builder"],
+
+    "@cc-ts/craftos-types": ["@cc-ts/craftos-types@workspace:packages/craftos-types"],
 
     "@cc-ts/crpc": ["@cc-ts/crpc@workspace:libraries/crpc"],
 
