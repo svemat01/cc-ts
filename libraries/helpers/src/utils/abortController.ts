@@ -45,7 +45,7 @@
  * for ComputerCraft's environment. Some subtle differences may exist.
  */
 
-import { setTimeout } from "./scheduler";
+import { setTimeout } from "../core/scheduler";
 
 /**
  * 🚦 AbortSignal represents a signal object that allows you to communicate with

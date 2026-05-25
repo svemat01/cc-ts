@@ -19,7 +19,7 @@ yarn add @cc-ts/helpers
 Promise-based event handling and scheduling for ComputerCraft. Perfect for building responsive applications!
 
 ```typescript
-import { runOsEventLoop, asyncSleep, on } from "@cc-ts/helpers/scheduler";
+import { runOsEventLoop, asyncSleep, on } from "@cc-ts/helpers/core/scheduler";
 
 // Handle events with type safety
 on("mouse_click", (button, x, y) => {
@@ -49,7 +49,7 @@ import {
     parseCliArgs,
     Command,
     executeCommand,
-} from "@cc-ts/helpers/cli-parser";
+} from "@cc-ts/helpers/utils/cli-parser";
 
 const commands: Command[] = [
     {
@@ -87,7 +87,7 @@ Distributed unique ID generation for ComputerCraft - like Snowflake, but for san
 import {
     createSandcornGenerator,
     decodeSandcorn,
-} from "@cc-ts/helpers/sandcorn";
+} from "@cc-ts/helpers/utils/sandcorn";
 
 const generateId = createSandcornGenerator();
 
@@ -106,7 +106,7 @@ print(`ID from computer ${machineId} at hour ${tick}`);
 Simple but powerful persistent storage with type safety. Never lose data between restarts!
 
 ```typescript
-import { PersistedStore } from "@cc-ts/helpers/persisted";
+import { PersistedStore } from "@cc-ts/helpers/utils/persisted";
 
 // Create a typed store
 interface GameState {
@@ -134,7 +134,7 @@ gameState.save();
 Intercept and customize object behavior - great for debugging, validation, or creating virtual properties.
 
 ```typescript
-import { createProxy } from "@cc-ts/helpers/proxy";
+import { createProxy } from "@cc-ts/helpers/utils/proxy";
 
 // Create a logging proxy for a turtle
 const turtle = createProxy(peripheral.find("turtle"), {
@@ -152,7 +152,7 @@ const turtle = createProxy(peripheral.find("turtle"), {
 Cancel async operations gracefully - essential for building responsive applications.
 
 ```typescript
-import { AbortController } from "@cc-ts/helpers/abortController";
+import { AbortController } from "@cc-ts/helpers/utils/abortController";
 
 async function mineShaft(signal: AbortSignal) {
     while (true) {
@@ -179,9 +179,9 @@ events.on("diamond_detected", () => {
 
 The library also includes several other helpful utilities:
 
--   🎮 **Event System** (`event.ts`) - Type-safe wrapper for CC events
--   🎭 **Event Emitter** (`eventEmitter.ts`) - Create custom event systems
--   🔗 **Rednet Helpers** (`rednet.ts`) - Simplified network communication
+-   🎮 **Event System** (`utils/event.ts`) - Type-safe wrapper for CC events
+-   🎭 **Event Emitter** (`utils/eventEmitter.ts`) - Create custom event systems
+-   🔗 **Rednet Helpers** (`utils/rednet.ts`) - Simplified network communication
 
 Check the [API documentation](https://cc-ts.github.io/helpers) for details on these and other utilities.
 

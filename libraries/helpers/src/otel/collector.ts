@@ -144,7 +144,7 @@ import {
 import { MetricsData } from "./types/metrics";
 import { LogsData } from "./types/logs";
 
-import { asyncSleep, on, waitForAnyEvent } from "../scheduler";
+import { asyncSleep, on, waitForAnyEvent } from "../core/scheduler";
 
 /**
  * 🔧 Configuration for the collector.
