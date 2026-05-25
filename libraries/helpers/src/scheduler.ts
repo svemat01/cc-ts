@@ -96,7 +96,6 @@
  */
 
 import { pretty } from "cc.pretty";
-import { Events } from "./types";
 
 class EventHandler<
     _Events extends Record<string, any[]>,
@@ -407,7 +406,7 @@ export class Panic extends Error {
  * to process events
  * @see {@link runOsEventLoop}
  */
-export const osEvents = new EventManager<Events>();
+export const osEvents = new EventManager<os.Events>();
 
 /**
  * Binds an event handler to an operating system event
