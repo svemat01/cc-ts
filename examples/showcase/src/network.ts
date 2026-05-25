@@ -1,5 +1,5 @@
-import { createSandcornGenerator } from "@cc-ts/helpers/sandcorn";
-import { waitForLookup, waitForResponse } from "@cc-ts/helpers/rednet";
+import { createSandcornGenerator } from "@cc-ts/helpers/utils/sandcorn";
+import { waitForLookup, waitForResponse } from "@cc-ts/helpers/utils/rednet";
 
 import config from "./data/showcase.json";
 import { printLines, printSection, printValue } from "./shared/print";

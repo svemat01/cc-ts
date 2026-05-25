@@ -4,12 +4,12 @@
     "target": "ESNext",
     "lib": [ "ESNext" ],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": false,
     "strictNullChecks": true,
     "types": [
       "@jackmacwindows/lua-types/cc",
-      "@jackmacwindows/craftos-types",
+      "@cc-ts/craftos-types",
       "@jackmacwindows/cc-types"
     ],
     "outDir": "dist",

@@ -1,6 +1,6 @@
-import { EventEmitter, EventMap } from "@cc-ts/helpers/eventEmitter";
-import { createProxy } from "@cc-ts/helpers/proxy";
-import { createSandcornGenerator, decodeSandcorn } from "@cc-ts/helpers/sandcorn";
+import { EventEmitter, EventMap } from "@cc-ts/helpers/utils/eventEmitter";
+import { createProxy } from "@cc-ts/helpers/utils/proxy";
+import { createSandcornGenerator, decodeSandcorn } from "@cc-ts/helpers/utils/sandcorn";
 import { Meter } from "@cc-ts/helpers/otel/helpers/instruments";
 import { SimpleLogger } from "@cc-ts/helpers/otel/helpers/logs";
 import { SimpleMetricsCollector } from "@cc-ts/helpers/otel/helpers/metrics";

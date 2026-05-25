@@ -548,6 +548,31 @@ declare namespace peripheral {
     function call(side: string, method: string, ...args: any[]): LuaMultiReturn<[...any[]]>;
     function wrap(name: string): IPeripheral | undefined;
     function find(type: string, filter?: (name: string, peripheral: IPeripheral) => boolean): LuaMultiReturn<[...IPeripheral[]]>;
+    function getMethods<Peripheral extends IPeripheral>(
+        name: string,
+    ): (keyof Peripheral | (string & {}))[];
+    function call<
+        Peripheral extends IPeripheral = IPeripheral,
+        Method extends keyof Peripheral = keyof Peripheral,
+        Args extends Parameters<
+            Peripheral[Method] extends (...args: any) => any
+                ? Peripheral[Method]
+                : never
+        > = Parameters<
+            Peripheral[Method] extends (...args: any) => any
+                ? Peripheral[Method]
+                : never
+        >,
+    >(side: string, method: Method, ...args: Args): LuaMultiReturn<[...any[]]>;
+    function wrap<Peripheral extends IPeripheral>(side: string): Peripheral;
+    function find(
+        type: string,
+        filter?: (side: string, peripheral: IPeripheral) => boolean,
+    ): LuaMultiReturn<[...IPeripheral[]]>;
+    function find<Peripheral extends IPeripheral = IPeripheral>(
+        type: string,
+        filter?: (side: string, peripheral: Peripheral) => boolean,
+    ): LuaMultiReturn<[...Peripheral[]]>;
 }
 /** @noSelf **/
 declare namespace pocket {
@@ -562,12 +587,13 @@ declare namespace rednet {
     function open(modem: string): void;
     function close(modem?: string): void;
     function isOpen(modem?: string): boolean;
-    function send(recipient: number, message: any, protocol?: string): boolean;
-    function broadcast(message: any, protocol?: string): void;
-    function receive(filter?: string, timeout?: number): LuaMultiReturn<[number, any, string | undefined] | [undefined]>;
+    function send<TMessage extends any = any>(recipient: number, message: TMessage, protocol?: string): boolean;
+    function broadcast<TMessage extends any = any>(message: TMessage, protocol?: string): void;
+    function receive<TMessage extends any = any>(filter?: string, timeout?: number): LuaMultiReturn<[number, TMessage, string | undefined] | [undefined]>;
     function host(protocol: string, hostname: string): void;
     function unhost(protocol: string): void;
-    function lookup(protocol: string, hostname?: string): LuaMultiReturn<[...number[]]>;
+    function lookup(protocol: string, hostname: string): number;
+    function lookup(protocol: string): LuaMultiReturn<[...number[]]>;
     function run(): void;
 }
 /** @noSelf **/
@@ -597,7 +623,7 @@ declare namespace settings {
     function define(name: string, options?: SettingOptions): void;
     function undefine(name: string): void;
     function set(name: string, value: any): void;
-    function get(name: string, defaultValue?: any): any;
+    function get<TValue extends any = any>(name: string, defaultValue?: TValue): TValue;
     function getDetails(name: string): SettingOptions;
     function unset(name: string): void;
     function clear(): void;
@@ -733,18 +759,18 @@ declare namespace textutils {
     function pagedPrint(text: string, freeLines?: number): number;
     function tabulate(...args: (LuaTable | Object | Color)[]): void;
     function pagedTabulate(...args: (LuaTable | Object | Color)[]): void;
-    function serialize(tab: any, options?: SerializeOptions): string;
+    function serialize<TValue extends any = any>(tab: TValue, options?: SerializeOptions): string;
     function serialise(tab: any, options?: SerializeOptions): string;
-    function serializeJSON(tab: any, nbtStyle?: boolean): string;
-    function serialiseJSON(tab: any, nbtStyle?: boolean): string;
-    function serializeJSON(tab: any, options: SerializeJSONOptions): string;
+    function serializeJSON<TValue extends any = any>(tab: TValue, nbtStyle?: boolean): string;
+    function serialiseJSON<TValue extends any = any>(tab: TValue, nbtStyle?: boolean): string;
+    function serializeJSON<TValue extends any = any>(tab: TValue, options: SerializeJSONOptions): string;
     function serialiseJSON(tab: any, options: SerializeJSONOptions): string;
-    function unserialize(str: string): any;
+    function unserialize<TValue extends any = any>(str: string): TValue;
     function unserialise(str: string): any;
     function unserializeJSON(str: string, options?: UnserializeJSONOptions): any;
-    function unserialiseJSON(str: string, options?: UnserializeJSONOptions): any;
+    function unserialiseJSON(str: string, options?: UnserializeJSONOptions): TValue;
     function urlEncode(url: string): string;
-    function complete(searchText: string, searchTable?: any): string[];
+    function complete(searchText: string, searchTable?: LuaTable<string, any>): string[];
 }
 /** @noSelf **/
 declare namespace turtle {

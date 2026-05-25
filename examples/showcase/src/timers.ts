@@ -1,4 +1,4 @@
-import { AbortController, AbortSignal } from "@cc-ts/helpers/abortController";
+import { AbortController, AbortSignal } from "@cc-ts/helpers/utils/abortController";
 import {
     PANIC,
     Panic,
@@ -6,12 +6,12 @@ import {
     on,
     runOsEventLoop,
     waitForEvent,
-} from "@cc-ts/helpers/scheduler";
+} from "@cc-ts/helpers/core/scheduler";
 
 import config from "./data/showcase.json";
 import { printLines, printSection, printValue } from "./shared/print";
 
-declare module "@cc-ts/helpers/types" {
+declare module "@cc-ts/helpers/core/types" {
     interface Events {
         showcase_exit: [];
     }

@@ -1,4 +1,4 @@
-import { PersistedStore } from "@cc-ts/helpers/persisted";
+import { PersistedStore } from "@cc-ts/helpers/utils/persisted";
 
 export interface RunSummary {
     id: string;

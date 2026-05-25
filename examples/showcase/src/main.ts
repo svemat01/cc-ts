@@ -3,7 +3,7 @@ import {
     parseCliArgs,
     printHelp,
     type Command,
-} from "@cc-ts/helpers/cli-parser";
+} from "@cc-ts/helpers/utils/cli-parser";
 
 import config from "./data/showcase.json";
 import { printLines, printSection, printStructured } from "./shared/print";
