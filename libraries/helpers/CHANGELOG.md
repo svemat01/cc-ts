@@ -1,5 +1,11 @@
 # @cc-ts/helpers
 
+## 0.4.2
+
+### Patch Changes
+
+- e0a0827: Fix publishing issue
+
 ## 0.4.1
 
 ### Patch Changes
