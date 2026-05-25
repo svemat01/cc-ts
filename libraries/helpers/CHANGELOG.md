@@ -1,5 +1,11 @@
 # @cc-ts/helpers
 
+## 0.4.1
+
+### Patch Changes
+
+- 0a05a1b: Added integration for CC: Redstone Link Bridge (`redstone_link_bridge` peripheral) with `getLinkSignal` and `sendLinkSignal` methods.
+
 ## 0.4.0
 
 ### Minor Changes
