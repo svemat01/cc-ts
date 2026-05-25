@@ -4,6 +4,7 @@
     "type": "module",
     "scripts": {
         "build": "bun run --workspaces --if-present build",
+        "test": "bun run --workspaces --if-present test",
         "publish": "bun run build && changeset publish",
         "docs": "bun run --filter '@cc-ts/helpers' build && bun run buildDocs.ts"
     },

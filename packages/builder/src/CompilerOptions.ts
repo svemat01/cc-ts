@@ -33,7 +33,7 @@ export function validateOptions(options: CompilerOptions): ts.Diagnostic[] {
         diagnostics.push(diagnosticFactories.serveRequiresWatch());
     }
 
-    // Validate excludeFromBundle is an array of strings if provided
+    // Validate ignoreAsEntryPoint is an array of strings if provided
     if (
         options.ignoreAsEntryPoint !== undefined &&
         (!Array.isArray(options.ignoreAsEntryPoint) ||

@@ -12,6 +12,31 @@ import {
 } from "./CompilerOptions";
 import { Glob } from "bun";
 
+const normalizeGlobPath = (filePath: string) => filePath.replaceAll("\\", "/");
+
+const matchesIgnorePattern = (
+    pattern: Glob,
+    fileName: string,
+    sourceDir: string,
+    projectRoot: string
+) => {
+    const candidatePaths = [
+        fileName,
+        path.relative(projectRoot, fileName),
+        path.relative(sourceDir, fileName),
+    ]
+        .map(normalizeGlobPath)
+        .filter(
+            (candidate, index, candidates) =>
+                candidate.length > 0 &&
+                !candidate.startsWith("../") &&
+                candidate !== ".." &&
+                candidates.indexOf(candidate) === index
+        );
+
+    return candidatePaths.some((candidate) => pattern.match(candidate));
+};
+
 export class TranspilationError extends Error {
     constructor(
         message: string,
@@ -126,6 +151,7 @@ export class CCTranspiler extends tstl.Transpiler {
 
         let emitPlan: tstl.EmitFile[] = [];
         const sourceDir = tstl.getSourceDir(program);
+        const projectRoot = tstl.getProjectRoot(program);
 
         this.logger.debug("Creating bundler instance");
         const bundler = new CCBundler(
@@ -140,11 +166,18 @@ export class CCTranspiler extends tstl.Transpiler {
             options.ignoreAsEntryPoint || DEFAULT_IGNORE_AS_ENTRY_POINT
         ).map((pattern) => new Glob(pattern));
         for (const file of files) {
-            const fileName = path.resolve(sourceDir, file.fileName);
+            const fileName = path.isAbsolute(file.fileName)
+                ? file.fileName
+                : path.resolve(sourceDir, file.fileName);
 
-            // Check if file should be ignored as an entry point
+            // Support both absolute and project-relative glob patterns.
             const shouldIgnore = ignorePatterns.some((pattern) => {
-                return pattern.match(fileName);
+                return matchesIgnorePattern(
+                    pattern,
+                    fileName,
+                    sourceDir,
+                    projectRoot
+                );
             });
 
             if (shouldIgnore) {

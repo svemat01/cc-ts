@@ -84,7 +84,7 @@ function getExtendedCCtsOptions(
         ) as {
             config?: {
                 extends?: string | string[];
-                ccts?: CCTSOptions;
+                ["cc-ts"]?: CCTSOptions;
             };
         };
 
@@ -118,8 +118,8 @@ function getExtendedCCtsOptions(
             }
         }
 
-        if (parsedConfig.ccts) {
-            Object.assign(options, parsedConfig.ccts);
+        if (parsedConfig["cc-ts"]) {
+            Object.assign(options, parsedConfig["cc-ts"]);
         }
     }
 

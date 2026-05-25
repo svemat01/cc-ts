@@ -56,12 +56,20 @@ export const optionDeclarations: Record<keyof CCTSOptions, CommandLineOption> = 
     },
 };
 
-// lookup of alias to option name
-const optionAliasLookup: Record<string, string> = {};
-for (const [name, option] of Object.entries(optionDeclarations)) {
+type OptionName = keyof typeof optionDeclarations;
+
+const normalizeOptionName = (name: string) =>
+    name.replace(/[-_]/g, "").toLowerCase();
+
+const optionNameLookup: Partial<Record<string, OptionName>> = {};
+for (const [name, option] of Object.entries(optionDeclarations) as [
+    OptionName,
+    CommandLineOption,
+][]) {
+    optionNameLookup[normalizeOptionName(name)] = name;
     if ("aliases" in option && option.aliases) {
         for (const alias of option.aliases) {
-            optionAliasLookup[alias] = name;
+            optionNameLookup[normalizeOptionName(alias)] = name;
         }
     }
 }
@@ -129,20 +137,13 @@ function updateParsedCommandLine(
         if (!args[i].startsWith("-")) continue;
 
         const isShorthand = !args[i].startsWith("--");
-        const argumentName = args[i]
-            .substring(isShorthand ? 1 : 2)
-            .toLowerCase();
-        const option =
-            optionDeclarations[
-                argumentName as keyof typeof optionDeclarations
-            ] ??
-            optionDeclarations[
-                optionAliasLookup[
-                    argumentName
-                ] as keyof typeof optionDeclarations
-            ];
+        const argumentName = args[i].substring(isShorthand ? 1 : 2);
+        const optionName = optionNameLookup[normalizeOptionName(argumentName)];
+        const option = optionName
+            ? optionDeclarations[optionName]
+            : undefined;
 
-        if (option) {
+        if (option && optionName) {
             // Ignore errors caused by ccts specific compiler options
             parsedCommandLine.errors = parsedCommandLine.errors.filter(
                 // TS5023: Unknown compiler option '{0}'.
@@ -156,11 +157,11 @@ function updateParsedCommandLine(
 
             const { error, value, consumed } = readCommandLineArgument(
                 option,
-                argumentName,
+                optionName,
                 args[i + 1]
             );
             if (error) parsedCommandLine.errors.push(error);
-            parsedCommandLine.options[argumentName] = value;
+            parsedCommandLine.options[optionName] = value;
             if (consumed) {
                 // Values of custom options are parsed as a file name, exclude them
                 parsedCommandLine.fileNames =

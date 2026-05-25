@@ -7,6 +7,9 @@
     "bin": {
         "cc-ts": "src/cc-ts.ts"
     },
+    "scripts": {
+        "test": "bun test"
+    },
     "devDependencies": {
         "@types/bun": "latest",
         "@types/yargs": "^17.0.32"
