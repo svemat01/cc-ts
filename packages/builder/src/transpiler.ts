@@ -3,6 +3,8 @@ import * as ts from "typescript";
 import { resolveDependencies } from "@jackmacwindows/typescript-to-lua/dist/transpilation/resolve";
 import * as performance from "@jackmacwindows/typescript-to-lua/dist/measure-performance";
 import * as path from "node:path";
+import { readFileSync } from "node:fs";
+import { mkdir, writeFile } from "node:fs/promises";
 import { CCBundler } from "./bundler";
 import { logger as _logger } from "./logger";
 import {
@@ -11,6 +13,13 @@ import {
     DEFAULT_IGNORE_AS_ENTRY_POINT,
 } from "./CompilerOptions";
 import { Glob } from "bun";
+import {
+    collectCompatibilityDiagnostics,
+    formatAnalysisReport,
+    getExternalNoResolvePatterns,
+    type BuilderBuildInfo,
+    type BuilderEmitFile,
+} from "./analysis";
 
 const normalizeGlobPath = (filePath: string) => filePath.replaceAll("\\", "/");
 
@@ -63,16 +72,28 @@ export class TranspilationError extends Error {
     }
 }
 
+export interface BuilderTranspileResult {
+    diagnostics: readonly ts.Diagnostic[];
+    emitSkipped: boolean;
+    program: ts.Program;
+    buildInfo?: BuilderBuildInfo;
+}
+
 export const transpileProjectFiles = async (
     parseResult: tstl.ParsedCommandLine
-) => {
+): Promise<BuilderTranspileResult> => {
     const logger = _logger.child({ module: "transpiler" });
     logger.info("Starting project transpilation");
     logger.debug("Creating program from parsed command line");
 
+    const options = {
+        ...(parseResult.options as CompilerOptions),
+    } as CompilerOptions;
+    options.noResolvePaths = getExternalNoResolvePatterns(options);
+
     const program = ts.createProgram({
         rootNames: parseResult.fileNames,
-        options: parseResult.options,
+        options,
         projectReferences: parseResult.projectReferences,
         configFileParsingDiagnostics:
             ts.getConfigFileParsingDiagnostics(parseResult),
@@ -82,10 +103,10 @@ export const transpileProjectFiles = async (
     const preEmitDiagnostics = ts.getPreEmitDiagnostics(program);
 
     logger.debug("Starting transpilation");
-    const { diagnostics: transpileDiagnostics, emitSkipped } =
-        new CCTranspiler().emit({
-            program,
-        });
+    const transpiler = new CCTranspiler();
+    const { diagnostics: transpileDiagnostics, emitSkipped } = transpiler.emit({
+        program,
+    });
 
     logger.trace("Sorting and deduplicating diagnostics");
     const diagnostics = ts.sortAndDeduplicateDiagnostics([
@@ -93,7 +114,35 @@ export const transpileProjectFiles = async (
         ...transpileDiagnostics,
     ]);
 
-    if (diagnostics.length > 0) {
+    const buildInfo = transpiler.getBuildInfo();
+
+    if (buildInfo && (options.analyze || (options.explain?.length ?? 0) > 0)) {
+        const format = options.analyzeFormat ?? "text";
+        const report = formatAnalysisReport(
+            buildInfo.analysis,
+            format,
+            options.explain ?? []
+        );
+
+        if (options.analyzeOutput) {
+            const analysisOutputPath = path.isAbsolute(options.analyzeOutput)
+                ? options.analyzeOutput
+                : path.resolve(
+                      tstl.getProjectRoot(program),
+                      options.analyzeOutput
+                  );
+            await mkdir(path.dirname(analysisOutputPath), { recursive: true });
+            await writeFile(analysisOutputPath, report, "utf8");
+        } else {
+            console.log(report);
+        }
+    }
+
+    if (
+        diagnostics.some(
+            (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
+        )
+    ) {
         logger.error("Transpilation failed with diagnostics");
         throw new TranspilationError(
             "Failed to transpile project",
@@ -106,14 +155,20 @@ export const transpileProjectFiles = async (
         diagnostics,
         emitSkipped,
         program,
+        buildInfo,
     };
 };
 
 export class CCTranspiler extends tstl.Transpiler {
     private logger = _logger.child({ class: "CCTranspiler" });
+    private lastBuildInfo?: BuilderBuildInfo;
 
     constructor(options?: tstl.TranspilerOptions) {
         super(options);
+    }
+
+    public getBuildInfo(): BuilderBuildInfo | undefined {
+        return this.lastBuildInfo;
     }
 
     protected getEmitPlan(
@@ -132,6 +187,7 @@ export class CCTranspiler extends tstl.Transpiler {
 
         const ccOptionsDiagnostics = validateOptions(options);
         diagnostics.push(...ccOptionsDiagnostics);
+        diagnostics.push(...collectCompatibilityDiagnostics(program, options));
 
         this.logger.debug("Resolving dependencies");
         const resolutionResult = resolveDependencies(
@@ -142,14 +198,15 @@ export class CCTranspiler extends tstl.Transpiler {
         );
         diagnostics.push(...resolutionResult.diagnostics);
 
+        const filteredResolutionFiles = resolutionResult.resolvedFiles.filter(
+            (f) => f.fileName !== (options.luaLibName ?? "lualib_bundle")
+        );
         this.logger.trace(
             "Filtering lualib placeholders from resolution result"
         );
-        resolutionResult.resolvedFiles = resolutionResult.resolvedFiles.filter(
-            (f) => f.fileName !== (options.luaLibName ?? "lualib_bundle")
-        );
+        resolutionResult.resolvedFiles = filteredResolutionFiles;
 
-        let emitPlan: tstl.EmitFile[] = [];
+        let emitPlan: BuilderEmitFile[] = [];
         const sourceDir = tstl.getSourceDir(program);
         const projectRoot = tstl.getProjectRoot(program);
 
@@ -160,6 +217,8 @@ export class CCTranspiler extends tstl.Transpiler {
             this.emitHost,
             diagnostics
         );
+
+        const entryModuleMap = new Map<string, string>();
 
         this.logger.info(`Processing ${files.length} files`);
         const ignorePatterns = (
@@ -186,13 +245,31 @@ export class CCTranspiler extends tstl.Transpiler {
             }
 
             this.logger.trace(`Bundling module`, { fileName });
+            const entryModule = bundler.createModulePath(fileName);
+            entryModuleMap.set(entryModule, fileName);
             const bundleResult = bundler.bundleModule(
-                bundler.createModulePath(fileName)
+                entryModule
             );
             if (bundleResult) {
                 emitPlan.push(bundleResult);
             }
         }
+
+        for (const copiedDependency of bundler.getCopiedDependencies().values()) {
+            emitPlan.push({
+                outputPath: copiedDependency.outputPath,
+                code: readFileSync(copiedDependency.fileName, "utf8"),
+            });
+        }
+
+        const graph = bundler.createGraphSnapshot(entryModuleMap);
+        const analysis = bundler.createAnalysis(graph, emitPlan);
+        this.lastBuildInfo = {
+            analysis,
+            emitPlan,
+            graph,
+            diagnostics,
+        };
 
         this.logger.debug("Emit plan construction completed");
         return { emitPlan };

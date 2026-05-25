@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import * as ts from "typescript";
 
 import { parseConfigFileWithSystem } from "../src/cli/tsconfig";
 import { TranspilationError, transpileProjectFiles } from "../src/transpiler";
@@ -72,6 +73,30 @@ describe("transpileProjectFiles", () => {
                     "../src/shared.lib.ts",
                 ]);
                 expect(sourceMap.mappings.length).toBeGreaterThan(0);
+            }
+        );
+    });
+
+    test("returns warnings without throwing from transpileProjectFiles", async () => {
+        await withParsedProject(
+            {
+                "src/main.ts": "export const value = 1;\n",
+                "tsconfig.json": toJson({
+                    compilerOptions: createTestTsConfig().compilerOptions,
+                    minify: false,
+                    include: ["src/**/*.ts"],
+                }),
+            },
+            async ({ parsed }) => {
+                const result = await transpileProjectFiles(parsed);
+
+                expect(result.emitSkipped).toBe(false);
+                expect(
+                    result.diagnostics.some(
+                        (diagnostic) =>
+                            diagnostic.category === ts.DiagnosticCategory.Warning
+                    )
+                ).toBe(true);
             }
         );
     });
@@ -153,6 +178,87 @@ describe("transpileProjectFiles", () => {
         );
     });
 
+    test("copies configured external Lua runtime files into the output directory", async () => {
+        await withTranspiledProject(
+            {
+                "tsconfig.json": toJson(
+                    createTestTsConfig({
+                        ccTs: {
+                            externals: [
+                                {
+                                    pattern: "runtime.lib",
+                                    mode: "copy",
+                                    outDir: "vendor",
+                                },
+                            ],
+                        },
+                    })
+                ),
+                "src/runtime.lib.lua": 'return { value = "runtime" }\n',
+                "src/runtime.lib.d.ts": 'declare const runtime: { value: string }; export = runtime;\n',
+                "src/main.ts": 'import runtime from "./runtime.lib";\nexport default runtime.value;\n',
+            },
+            async ({ projectDir, result }) => {
+                const bundle = await Bun.file(`${projectDir}/dist/main.lua`).text();
+                const copiedRuntime = await Bun.file(
+                    `${projectDir}/dist/vendor/runtime/lib.lua`
+                ).text();
+
+                expect(bundle).toContain('require("runtime.lib")');
+                expect(bundle).toContain(';vendor/?.lua;vendor/?/init.lua');
+                expect(copiedRuntime).toContain('return { value = "runtime" }');
+                expect(result.buildInfo?.analysis.copiedFiles).toEqual([
+                    {
+                        moduleName: "runtime.lib",
+                        outputPath: "dist/vendor/runtime/lib.lua",
+                        fileName: "src/runtime.lib.lua",
+                    },
+                ]);
+            }
+        );
+    });
+
+    test("writes build analysis when enabled", async () => {
+        await withTranspiledProject(
+            {
+                "tsconfig.json": toJson(
+                    createTestTsConfig({
+                        ccTs: {
+                            analyze: true,
+                            analyzeFormat: "json",
+                            analyzeOutput: "analysis.json",
+                            builtInModules: ["fs"],
+                        },
+                    })
+                ),
+                "src/main.ts": 'declare function require(name: string): any;\nconst fs = require("fs");\nexport default fs;\n',
+            },
+            async ({ projectDir, result }) => {
+                const analysis = await readJsonFile<{
+                    entrypoints: Array<{ entry: string }>;
+                    dependencies: Array<{ moduleName: string; kind: string }>;
+                }>(`${projectDir}/analysis.json`);
+
+                expect(result.buildInfo?.analysis.entrypoints[0]?.entry).toBe("main");
+                expect(analysis.entrypoints[0]?.entry).toBe("main");
+                expect(
+                    analysis.dependencies.some(
+                        (dependency) =>
+                            dependency.moduleName === "main" &&
+                            dependency.kind === "entry"
+                    )
+                ).toBe(true);
+                expect(
+                    analysis.dependencies.some(
+                        (dependency) =>
+                            dependency.moduleName === "fs" &&
+                            dependency.kind === "builtin"
+                    )
+                ).toBe(true);
+            }
+        );
+    });
+
     test("emits a compact bundle when minify is enabled", async () => {
         await withTranspiledProject(
             {
@@ -171,6 +277,26 @@ describe("transpileProjectFiles", () => {
                 expect(bundle).toContain("-- Minified: true");
                 expect(bundle).toContain('a={[');
                 expect(bundle).not.toContain('____modules = {\n');
+            }
+        );
+    });
+
+    test("uses reproducible bundle headers when requested", async () => {
+        await withTranspiledProject(
+            {
+                "tsconfig.json": toJson(
+                    createTestTsConfig({
+                        ccTs: {
+                            reproducible: true,
+                        },
+                    })
+                ),
+                "src/main.ts": 'export default "ok";\n',
+            },
+            async ({ projectDir }) => {
+                const bundle = await Bun.file(`${projectDir}/dist/main.lua`).text();
+
+                expect(bundle).toContain("-- BuildTime: reproducible");
             }
         );
     });

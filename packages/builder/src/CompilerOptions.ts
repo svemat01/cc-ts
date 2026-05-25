@@ -1,5 +1,6 @@
 import * as ts from "typescript";
 import type { CompilerOptions as TSTLOptions } from "@jackmacwindows/typescript-to-lua";
+import type { AnalysisFormat, ExternalModuleRule } from "./analysis";
 import * as diagnosticFactories from "./diagnostics";
 
 export interface CCTSOptions {
@@ -9,6 +10,12 @@ export interface CCTSOptions {
     servePort?: number;
     debug?: boolean;
     extraPaths?: string[];
+    analyze?: boolean;
+    analyzeFormat?: AnalysisFormat;
+    analyzeOutput?: string;
+    explain?: string[];
+    externals?: ExternalModuleRule[];
+    reproducible?: boolean;
     /**
      * Glob patterns for files to exclude from being treated as entry points.
      * Files matching these patterns will still be included when imported by other modules.
@@ -21,6 +28,9 @@ export type CompilerOptions = TSTLOptions &
     CCTSOptions & {
         [option: string]: any;
     };
+
+const validAnalyzeFormats = new Set<AnalysisFormat>(["text", "json"]);
+const validExternalModes = new Set(["builtin", "external", "copy"]);
 
 export function validateOptions(options: CompilerOptions): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
@@ -42,6 +52,48 @@ export function validateOptions(options: CompilerOptions): ts.Diagnostic[] {
             ))
     ) {
         diagnostics.push(diagnosticFactories.invalidIgnoreAsEntryPoint());
+    }
+
+    if (
+        options.explain !== undefined &&
+        (!Array.isArray(options.explain) ||
+            options.explain.some((pattern) => typeof pattern !== "string"))
+    ) {
+        diagnostics.push(diagnosticFactories.invalidExplain());
+    }
+
+    if (
+        options.externals !== undefined &&
+        (!Array.isArray(options.externals) ||
+            options.externals.some((rule) => {
+                if (!rule || typeof rule !== "object" || Array.isArray(rule)) {
+                    return true;
+                }
+
+                const candidate = rule as ExternalModuleRule;
+                return (
+                    typeof candidate.pattern !== "string" ||
+                    (candidate.mode !== undefined &&
+                        !validExternalModes.has(candidate.mode)) ||
+                    (candidate.outDir !== undefined &&
+                        typeof candidate.outDir !== "string") ||
+                    (candidate.reason !== undefined &&
+                        typeof candidate.reason !== "string")
+                );
+            }))
+    ) {
+        diagnostics.push(diagnosticFactories.invalidExternals());
+    }
+
+    if (
+        options.analyzeFormat !== undefined &&
+        !validAnalyzeFormats.has(options.analyzeFormat)
+    ) {
+        diagnostics.push(diagnosticFactories.invalidAnalyzeFormat());
+    }
+
+    if (options.minify && (options.sourceMap || options.sourceMapTraceback)) {
+        diagnostics.push(diagnosticFactories.minifyWithSourceMapsNotSupported());
     }
 
     return diagnostics;

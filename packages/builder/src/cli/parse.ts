@@ -29,6 +29,19 @@ export const optionDeclarations: Record<keyof CCTSOptions, CommandLineOption> = 
         description: "Minify the resulting Lua files.",
         type: "boolean",
     },
+    analyze: {
+        description: "Print a builder dependency analysis report.",
+        type: "boolean",
+    },
+    analyzeFormat: {
+        description: "The output format for dependency analysis.",
+        type: "enum",
+        choices: ["text", "json"],
+    },
+    analyzeOutput: {
+        description: "Write dependency analysis to a file.",
+        type: "string",
+    },
     builtInModules: {
         description: "A list of built-in modules to include in the bundle.",
         type: "array",
@@ -50,9 +63,21 @@ export const optionDeclarations: Record<keyof CCTSOptions, CommandLineOption> = 
         description: "A list of extra paths to include in the bundle.",
         type: "array",
     },
+    explain: {
+        description: "Explain why modules were bundled or externalized.",
+        type: "array",
+    },
+    externals: {
+        description: "Configure builder-specific external module rules.",
+        type: "json-array-of-objects",
+    },
     ignoreAsEntryPoint: {
         description: "A list of files to ignore as entry points.",
         type: "array",
+    },
+    reproducible: {
+        description: "Remove volatile metadata from generated bundle headers.",
+        type: "boolean",
     },
 };
 

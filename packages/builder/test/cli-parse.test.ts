@@ -40,12 +40,40 @@ describe("parseCommandLine", () => {
             "false",
             "--extra-paths",
             "vendor,lib",
+            "--reproducible",
         ]);
 
         expect(result.errors).toHaveLength(0);
         expect(result.options.servePort).toBe(9300);
         expect(result.options.debug).toBe(false);
         expect(result.options.extraPaths).toEqual(["vendor", "lib"]);
+        expect(result.options.reproducible).toBe(true);
+    });
+
+    test("parses analysis and external rule flags", () => {
+        const result = parseCommandLine([
+            "--analyze",
+            "--analyze-format",
+            "json",
+            "--analyze-output",
+            "dist/report.json",
+            "--explain",
+            "fs,my-lib",
+            "--externals",
+            '[{"pattern":"fs","mode":"builtin"}]',
+        ]);
+
+        expect(result.errors).toHaveLength(0);
+        expect(result.options.analyze).toBe(true);
+        expect(result.options.analyzeFormat).toBe("json");
+        expect(result.options.analyzeOutput).toBe("dist/report.json");
+        expect(result.options.explain).toEqual(["fs", "my-lib"]);
+        expect(result.options.externals).toEqual([
+            {
+                pattern: "fs",
+                mode: "builtin",
+            },
+        ]);
     });
 
     test("reports invalid value types for custom builder flags", () => {

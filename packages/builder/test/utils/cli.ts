@@ -34,6 +34,25 @@ export async function runBuilderCli(
     };
 }
 
+export function spawnBuilderCli(
+    args: string[],
+    options: {
+        cwd?: string;
+        env?: Record<string, string>;
+    } = {}
+) {
+    return Bun.spawn({
+        cmd: [process.execPath, cliEntryFile, ...args],
+        cwd: options.cwd,
+        env: {
+            ...process.env,
+            ...options.env,
+        },
+        stdout: "pipe",
+        stderr: "pipe",
+    });
+}
+
 export const normalizeHelpOutput = (output: string) =>
     output.replace(/^Version .+$/m, "Version <builder> (TSTL <tstl>)");
 

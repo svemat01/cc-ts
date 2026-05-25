@@ -15,22 +15,30 @@ local ____modules = {}
 local ____moduleCache = {}
 local ____originalRequire = require
 local function require(file, ...)
-    if ____moduleCache[file] then
-        return ____moduleCache[file].value
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
     end
-    if ____modules[file] then
-        local module = ____modules[file]
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
         if select("#", ...) > 0 then
-            ____moduleCache[file] = { value = module(...) }
+            ____moduleCache[moduleKey] = { value = module(...) }
         else
-            ____moduleCache[file] = { value = module(file) }
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
         end
-        return ____moduleCache[file].value
+        return ____moduleCache[moduleKey].value
     else
         if ____originalRequire then
-            return ____originalRequire(file)
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
         else
-            error("module '" .. file .. "' not found")
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
         end
     end
 end
@@ -294,22 +302,30 @@ local ____modules = {}
 local ____moduleCache = {}
 local ____originalRequire = require
 local function require(file, ...)
-    if ____moduleCache[file] then
-        return ____moduleCache[file].value
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
     end
-    if ____modules[file] then
-        local module = ____modules[file]
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
         if select("#", ...) > 0 then
-            ____moduleCache[file] = { value = module(...) }
+            ____moduleCache[moduleKey] = { value = module(...) }
         else
-            ____moduleCache[file] = { value = module(file) }
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
         end
-        return ____moduleCache[file].value
+        return ____moduleCache[moduleKey].value
     else
         if ____originalRequire then
-            return ____originalRequire(file)
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
         else
-            error("module '" .. file .. "' not found")
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
         end
     end
 end
@@ -327,28 +343,36 @@ return require("config", ...)"
 -- Entry: main
 -- Hash: <hash>
 -- BuildTime: <build-time>
--- Files: main.ts, config.json
+-- Files: config.json, main.ts
 -- Minified: false
 local ____modules = {}
 local ____moduleCache = {}
 local ____originalRequire = require
 local function require(file, ...)
-    if ____moduleCache[file] then
-        return ____moduleCache[file].value
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
     end
-    if ____modules[file] then
-        local module = ____modules[file]
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
         if select("#", ...) > 0 then
-            ____moduleCache[file] = { value = module(...) }
+            ____moduleCache[moduleKey] = { value = module(...) }
         else
-            ____moduleCache[file] = { value = module(file) }
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
         end
-        return ____moduleCache[file].value
+        return ____moduleCache[moduleKey].value
     else
         if ____originalRequire then
-            return ____originalRequire(file)
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
         else
-            error("module '" .. file .. "' not found")
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
         end
     end
 end
@@ -385,22 +409,30 @@ local ____modules = {}
 local ____moduleCache = {}
 local ____originalRequire = require
 local function require(file, ...)
-    if ____moduleCache[file] then
-        return ____moduleCache[file].value
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
     end
-    if ____modules[file] then
-        local module = ____modules[file]
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
         if select("#", ...) > 0 then
-            ____moduleCache[file] = { value = module(...) }
+            ____moduleCache[moduleKey] = { value = module(...) }
         else
-            ____moduleCache[file] = { value = module(file) }
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
         end
-        return ____moduleCache[file].value
+        return ____moduleCache[moduleKey].value
     else
         if ____originalRequire then
-            return ____originalRequire(file)
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
         else
-            error("module '" .. file .. "' not found")
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
         end
     end
 end
@@ -440,6 +472,12 @@ Options:
 
  --minify <boolean>                              Minify the resulting Lua files.
 
+ --analyze <boolean>                             Print a builder dependency analysis report.
+
+ --analyzeFormat <text|json>                     The output format for dependency analysis.
+
+ --analyzeOutput <string>                        Write dependency analysis to a file.
+
  --builtInModules <array>                        A list of built-in modules to include in the bundle.
 
  --serve <boolean>                               Serve the bundle over HTTP.
@@ -450,7 +488,80 @@ Options:
 
  --extraPaths <array>                            A list of extra paths to include in the bundle.
 
+ --explain <array>                               Explain why modules were bundled or externalized.
+
+ --externals <json-array-of-objects>             Configure builder-specific external module rules.
+
  --ignoreAsEntryPoint <array>                    A list of files to ignore as entry points.
 
+ --reproducible <boolean>                        Remove volatile metadata from generated bundle headers.
+
 "
+`;
+
+exports[`builder e2e cli emits analysis output and copied runtime artifacts 1`] = `
+{
+  "main.lua": 
+"-- Generated by @cc-ts/builder@<version>
+-- HeaderSchema: @cc-ts/builder - v0.0.1
+-- Entry: main
+-- Hash: <hash>
+-- BuildTime: <build-time>
+-- Files: main.ts
+-- Minified: false
+local ____defaultPath = package.path
+package.path = ____defaultPath..";vendor/?.lua;vendor/?/init.lua"
+            
+local ____modules = {}
+local ____moduleCache = {}
+local ____originalRequire = require
+local function require(file, ...)
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
+    end
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
+        if select("#", ...) > 0 then
+            ____moduleCache[moduleKey] = { value = module(...) }
+        else
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
+        end
+        return ____moduleCache[moduleKey].value
+    else
+        if ____originalRequire then
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
+        else
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
+        end
+    end
+end
+____modules = {
+["main"] = function(...) 
+--[[ Generated with https://github.com/TypeScriptToLua/TypeScriptToLua ]]
+local ____exports = {}
+local ____runtime_2Elib = require("runtime.lib")
+local runtime = ____runtime_2Elib.default
+____exports.default = runtime.value
+return ____exports
+ end,
+}
+
+local ____export = require("main", ...)
+package.path = ____defaultPath
+return ____export
+"
+,
+  "vendor/runtime/lib.lua": 
+"return { value = "runtime" }
+"
+,
+}
 `;
