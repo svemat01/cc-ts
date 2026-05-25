@@ -1,6 +1,6 @@
 import kleur from "kleur";
 import type { ParsedArgs } from "..";
-import type { $, Shell, ShellPromise } from "bun";
+import type { $ } from "bun";
 
 export type AppExec = (
     targetDirectory: string,
@@ -48,7 +48,7 @@ export type AppAction =
            * Command to run
            * @example 'npm create svelte@next'
            */
-          command: () => ShellPromise;
+          command: () => $.ShellPromise;
 
           startMsg: string;
           stopMsg: string;

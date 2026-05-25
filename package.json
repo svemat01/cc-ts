@@ -3,11 +3,11 @@
     "module": "index.ts",
     "type": "module",
     "scripts": {
-        "publish": "moon ci :build && changeset publish",
-        "docs": "moon run helpers:build && bun run buildDocs.ts"
+        "build": "bun run --workspaces --if-present build",
+        "publish": "bun run build && changeset publish",
+        "docs": "bun run --filter '@cc-ts/helpers' build && bun run buildDocs.ts"
     },
     "devDependencies": {
-        "@moonrepo/cli": "^1.30.0",
         "@types/bun": "latest",
         "typedoc": "^0.27.1",
         "typedoc-material-theme": "^1.2.0"
@@ -21,8 +21,5 @@
     ],
     "dependencies": {
         "@changesets/cli": "^2.27.10"
-    },
-    "trustedDependencies": [
-        "@moonrepo/cli"
-    ]
+    }
 }

@@ -212,7 +212,7 @@ function updateWatchCompilationHost(
 
     const transpiler = new CCTranspiler();
 
-    let server: Promise<Server> | undefined = undefined;
+    let server: Promise<Server<any>> | undefined = undefined;
     let currentPort: number | undefined = undefined;
     let currentEmitDir: string | undefined = undefined;
 

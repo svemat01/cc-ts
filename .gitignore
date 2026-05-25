@@ -175,6 +175,5 @@ dist
 # Finder (MacOS) folder config
 .DS_Store
 
-# moon
-.moon/cache
-.moon/docker
+# Bun
+.bun

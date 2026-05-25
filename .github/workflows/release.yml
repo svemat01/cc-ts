@@ -17,12 +17,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: oven-sh/setup-bun@v1
-
-      - uses: 'moonrepo/setup-toolchain@v0'
+      - uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
-        run: bun install --frozen-lockfile
+        run: bun ci
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
