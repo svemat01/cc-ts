@@ -15,22 +15,30 @@ local ____modules = {}
 local ____moduleCache = {}
 local ____originalRequire = require
 local function require(file, ...)
-    if ____moduleCache[file] then
-        return ____moduleCache[file].value
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
     end
-    if ____modules[file] then
-        local module = ____modules[file]
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
         if select("#", ...) > 0 then
-            ____moduleCache[file] = { value = module(...) }
+            ____moduleCache[moduleKey] = { value = module(...) }
         else
-            ____moduleCache[file] = { value = module(file) }
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
         end
-        return ____moduleCache[file].value
+        return ____moduleCache[moduleKey].value
     else
         if ____originalRequire then
-            return ____originalRequire(file)
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
         else
-            error("module '" .. file .. "' not found")
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
         end
     end
 end
@@ -294,22 +302,30 @@ local ____modules = {}
 local ____moduleCache = {}
 local ____originalRequire = require
 local function require(file, ...)
-    if ____moduleCache[file] then
-        return ____moduleCache[file].value
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
     end
-    if ____modules[file] then
-        local module = ____modules[file]
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
         if select("#", ...) > 0 then
-            ____moduleCache[file] = { value = module(...) }
+            ____moduleCache[moduleKey] = { value = module(...) }
         else
-            ____moduleCache[file] = { value = module(file) }
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
         end
-        return ____moduleCache[file].value
+        return ____moduleCache[moduleKey].value
     else
         if ____originalRequire then
-            return ____originalRequire(file)
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
         else
-            error("module '" .. file .. "' not found")
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
         end
     end
 end
@@ -327,28 +343,36 @@ return require("config", ...)"
 -- Entry: main
 -- Hash: <hash>
 -- BuildTime: <build-time>
--- Files: main.ts, config.json
+-- Files: config.json, main.ts
 -- Minified: false
 local ____modules = {}
 local ____moduleCache = {}
 local ____originalRequire = require
 local function require(file, ...)
-    if ____moduleCache[file] then
-        return ____moduleCache[file].value
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
     end
-    if ____modules[file] then
-        local module = ____modules[file]
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
         if select("#", ...) > 0 then
-            ____moduleCache[file] = { value = module(...) }
+            ____moduleCache[moduleKey] = { value = module(...) }
         else
-            ____moduleCache[file] = { value = module(file) }
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
         end
-        return ____moduleCache[file].value
+        return ____moduleCache[moduleKey].value
     else
         if ____originalRequire then
-            return ____originalRequire(file)
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
         else
-            error("module '" .. file .. "' not found")
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
         end
     end
 end
@@ -385,22 +409,30 @@ local ____modules = {}
 local ____moduleCache = {}
 local ____originalRequire = require
 local function require(file, ...)
-    if ____moduleCache[file] then
-        return ____moduleCache[file].value
+    local moduleKey = file
+    local externalTarget = select(1, ...)
+    if ____moduleCache[moduleKey] then
+        return ____moduleCache[moduleKey].value
     end
-    if ____modules[file] then
-        local module = ____modules[file]
+    if ____modules[moduleKey] then
+        local module = ____modules[moduleKey]
         if select("#", ...) > 0 then
-            ____moduleCache[file] = { value = module(...) }
+            ____moduleCache[moduleKey] = { value = module(...) }
         else
-            ____moduleCache[file] = { value = module(file) }
+            ____moduleCache[moduleKey] = { value = module(moduleKey) }
         end
-        return ____moduleCache[file].value
+        return ____moduleCache[moduleKey].value
     else
         if ____originalRequire then
-            return ____originalRequire(file)
+            if externalTarget ~= nil then
+                return ____originalRequire(externalTarget)
+            end
+            return ____originalRequire(moduleKey)
         else
-            error("module '" .. file .. "' not found")
+            if externalTarget ~= nil then
+                error("module '" .. externalTarget .. "' not found")
+            end
+            error("module '" .. moduleKey .. "' not found")
         end
     end
 end
