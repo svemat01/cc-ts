@@ -167,6 +167,7 @@ export class CCBundler {
         );
     }
 
+    /** Lua module key for a bundled emit file (not for external/builtin require names). */
     public createModulePath(pathToResolve: string) {
         this.logger.trace("Creating module path", { pathToResolve });
         return formatPathToLuaPath(
@@ -176,13 +177,27 @@ export class CCBundler {
         );
     }
 
+    private matchesConfiguredBuiltInModule(
+        moduleName: string,
+        configuredModules: readonly string[] | undefined
+    ) {
+        return (configuredModules ?? []).some(
+            (configuredModule) =>
+                configuredModule === moduleName ||
+                formatPathToLuaPath(configuredModule) === moduleName
+        );
+    }
+
     public isBuiltInModule(moduleName: string) {
         const options = this.program.getCompilerOptions() as CompilerOptions;
         const matchedRule = this.getExternalRule(moduleName);
         const isBuiltIn =
             moduleName.startsWith("cc.") ||
             moduleName === "lualib_bundle" ||
-            (options.builtInModules ?? []).includes(moduleName) ||
+            this.matchesConfiguredBuiltInModule(
+                moduleName,
+                options.builtInModules
+            ) ||
             matchedRule?.mode === "builtin";
         this.logger.trace("Checking if module is built-in", {
             moduleName,
@@ -506,6 +521,13 @@ export class CCBundler {
                 return;
             }
 
+            if (this.shouldLeaveExternalModule(dependency, file)) {
+                this.logger.trace("Leaving resolved module external", {
+                    dependency,
+                });
+                continue;
+            }
+
             if (this.shouldCopyExternalModule(dependency, file)) {
                 const copiedModules = this.collectCopiedDependencyClosure(
                     dependency,
@@ -621,12 +643,19 @@ return ____export
                 this.generateHeader({
                     entry: moduleName,
                     files: files
-                        .filter(
-                            (f) =>
-                                !this.isBuiltInModule(
-                                    this.createModulePath(f.fileName)
+                        .filter((f) => {
+                            const bundledModulePath = this.createModulePath(
+                                f.fileName
+                            );
+                            return (
+                                bundledModulePath !== "lualib_bundle" &&
+                                !this.isBuiltInModule(bundledModulePath) &&
+                                !this.shouldLeaveExternalModule(
+                                    bundledModulePath,
+                                    f
                                 )
-                        )
+                            );
+                        })
                         .map((f) =>
                             relative(sourceDir, f.fileName).replaceAll(
                                 "../node_modules/",

@@ -153,6 +153,65 @@ describe("transpileProjectFiles", () => {
         );
     });
 
+    test("keeps configured external modules out of the bundle when they were resolved", async () => {
+        await withTranspiledProject(
+            {
+                "tsconfig.json": toJson(
+                    createTestTsConfig({
+                        ccTs: {
+                            externals: [
+                                {
+                                    pattern: "external.lib",
+                                    mode: "external",
+                                },
+                            ],
+                        },
+                    })
+                ),
+                "src/external.lib.ts": 'export const value = "external";\n',
+                "src/main.ts":
+                    'import { value } from "./external.lib";\nexport default value;\n',
+            },
+            async ({ projectDir }) => {
+                const bundle = await Bun.file(`${projectDir}/dist/main.lua`).text();
+
+                expect(bundle).toContain('["main"] = function(...)');
+                expect(bundle).not.toContain('["external.lib"] = function(...)');
+            }
+        );
+    });
+
+    test("treats builtInModules configured with path separators as built-in", async () => {
+        await withTranspiledProject(
+            {
+                "tsconfig.json": toJson(
+                    createTestTsConfig({
+                        ccTs: {
+                            builtInModules: ["advanced_math/pid"],
+                            analyze: true,
+                            analyzeFormat: "json",
+                            analyzeOutput: "analysis.json",
+                        },
+                    })
+                ),
+                "src/main.ts":
+                    'declare function require(name: string): any;\nconst pid = require("advanced_math/pid");\nexport default pid;\n',
+            },
+            async ({ projectDir }) => {
+                const analysis = await readJsonFile<{
+                    dependencies: Array<{ moduleName: string; kind: string }>;
+                }>(`${projectDir}/analysis.json`);
+
+                const advancedMathDependency = analysis.dependencies.find(
+                    (dependency) =>
+                        dependency.moduleName === "advanced_math.pid" ||
+                        dependency.moduleName === "advanced_math/pid"
+                );
+                expect(advancedMathDependency?.kind).toBe("builtin");
+            }
+        );
+    });
+
     test("keeps built-in modules external while bundling local modules", async () => {
         await withTranspiledProject(
             {
