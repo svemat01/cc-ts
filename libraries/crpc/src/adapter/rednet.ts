@@ -1,6 +1,6 @@
 import { AnyRouter, callProcedure } from "../router";
-import { on } from "@cc-ts/helpers/scheduler";
-import { AbortController } from "@cc-ts/helpers/abortController";
+import { on } from "@cc-ts/helpers/core/scheduler";
+import { AbortController } from "@cc-ts/helpers/utils/abortController";
 import {
     CRPCClientOutgoingMessage,
     CRPCResponseMessage,

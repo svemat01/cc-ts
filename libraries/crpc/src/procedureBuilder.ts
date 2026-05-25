@@ -1,4 +1,4 @@
-import { AbortSignal } from "@cc-ts/helpers/abortController";
+import { AbortSignal } from "@cc-ts/helpers/utils/abortController";
 import { getCRPCErrorFromUnknown, CRPCError } from "./error/CRPCError";
 import {
     AnyMiddlewareFunction,

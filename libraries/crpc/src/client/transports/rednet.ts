@@ -1,4 +1,4 @@
-import { waitForEvent, asyncSleep, on } from "@cc-ts/helpers/scheduler";
+import { waitForEvent, asyncSleep, on } from "@cc-ts/helpers/core/scheduler";
 import {
     CRPCClientOutgoingMessage,
     CRPCResponseMessage,

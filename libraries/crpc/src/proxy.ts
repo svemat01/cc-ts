@@ -1,4 +1,4 @@
-import { createProxy } from "@cc-ts/helpers/proxy";
+import { createProxy } from "@cc-ts/helpers/utils/proxy";
 
 interface ProxyCallbackOptions {
     path: readonly string[];

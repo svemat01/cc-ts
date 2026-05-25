@@ -1,4 +1,4 @@
-import type { AbortSignal } from "@cc-ts/helpers/abortController";
+import type { AbortSignal } from "@cc-ts/helpers/utils/abortController";
 import { CRPCError } from "./error/CRPCError";
 import type { ParseFn } from "./parser";
 import type { ProcedureType } from "./procedure";

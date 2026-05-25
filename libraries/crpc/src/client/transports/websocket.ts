@@ -5,7 +5,7 @@ import {
     once,
     waitForAnyEvent,
     waitForEvent,
-} from "@cc-ts/helpers/scheduler";
+} from "@cc-ts/helpers/core/scheduler";
 import {
     CRPCClientIncomingMessage,
     CRPCClientOutgoingMessage,
