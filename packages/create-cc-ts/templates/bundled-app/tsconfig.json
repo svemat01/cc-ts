@@ -24,6 +24,7 @@
   },
   "cc-ts": {
     "minify": false,
+    "reproducible": false,
   },
   "include": [ "src/**/*.ts" ]
 }

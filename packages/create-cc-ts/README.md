@@ -25,6 +25,7 @@ bun create cc-ts my-awesome-project
 Perfect for building complete applications! Includes:
 
 -   🏗️ `@cc-ts/builder` for smart bundling
+-   🔎 Dependency analysis and external runtime rules
 -   🔄 Hot reload development server
 -   📦 Dependency management
 -   🗜️ Optional minification
