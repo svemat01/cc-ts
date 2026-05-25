@@ -3,11 +3,13 @@ import * as cliDiagnostics from "@jackmacwindows/typescript-to-lua/dist/cli/diag
 import {
     createDiagnosticReporter,
     getEmitOutDir,
+    getProjectRoot,
 } from "@jackmacwindows/typescript-to-lua";
 import { locateConfigFile } from "@jackmacwindows/typescript-to-lua/dist/cli/tsconfig";
 import * as performance from "@jackmacwindows/typescript-to-lua/dist/measure-performance";
 import * as tstl from "@jackmacwindows/typescript-to-lua";
 import * as path from "path";
+import { mkdirSync, writeFileSync } from "node:fs";
 import ts from "typescript";
 
 import { getHelpString, versionString } from "./cli/information";
@@ -16,10 +18,12 @@ import {
     createConfigFileUpdater,
     parseConfigFileWithSystem,
 } from "./cli/tsconfig";
+import { formatAnalysisReport } from "./analysis";
 import { CCTranspiler } from "./transpiler";
-import { getBuiltInModules, type CompilerOptions } from "./CompilerOptions";
+import { type CompilerOptions } from "./CompilerOptions";
 import type { Server } from "bun";
 import { logger } from "./logger";
+import { getInvalidatedSourceFiles } from "./watch";
 
 const shouldBePretty = ({ pretty }: ts.CompilerOptions = {}) =>
     pretty !== undefined
@@ -146,14 +150,37 @@ function performCompilation(
 
     performance.endSection("createProgram");
 
-    const { diagnostics: transpileDiagnostics, emitSkipped } =
-        new CCTranspiler().emit({ program });
+    const transpiler = new CCTranspiler();
+    const { diagnostics: transpileDiagnostics, emitSkipped } = transpiler.emit({
+        program,
+    });
 
     const diagnostics = ts.sortAndDeduplicateDiagnostics([
         ...preEmitDiagnostics,
         ...transpileDiagnostics,
     ]);
     diagnostics.forEach(reportDiagnostic);
+
+    const buildInfo = transpiler.getBuildInfo();
+    if (
+        buildInfo &&
+        (options.analyze || (options.explain?.length ?? 0) > 0)
+    ) {
+        const report = formatAnalysisReport(
+            buildInfo.analysis,
+            options.analyzeFormat ?? "text",
+            options.explain ?? []
+        );
+        if (options.analyzeOutput) {
+            const analysisOutputPath = path.isAbsolute(options.analyzeOutput)
+                ? options.analyzeOutput
+                : path.resolve(getProjectRoot(program), options.analyzeOutput);
+            mkdirSync(path.dirname(analysisOutputPath), { recursive: true });
+            writeFileSync(analysisOutputPath, report, "utf8");
+        } else {
+            console.log(report);
+        }
+    }
 
     if (options.measurePerformance) reportPerformance();
 
@@ -206,11 +233,44 @@ function updateWatchCompilationHost(
     host: ts.WatchCompilerHost<ts.SemanticDiagnosticsBuilderProgram>,
     optionsToExtend: CompilerOptions
 ): void {
-    console.log("updateWatchCompilationHost");
     let hadErrorLastTime = true;
     const updateConfigFile = createConfigFileUpdater(optionsToExtend);
 
     const transpiler = new CCTranspiler();
+    let pendingChangedFiles = new Set<string>();
+
+    const originalWatchFile = host.watchFile?.bind(host);
+    if (originalWatchFile) {
+        host.watchFile = (fileName, callback, pollingInterval, options) =>
+            originalWatchFile(
+                fileName,
+                (changedFileName, eventKind, version) => {
+                    pendingChangedFiles.add(path.normalize(changedFileName));
+                    callback(changedFileName, eventKind, version);
+                },
+                pollingInterval,
+                options
+            );
+    }
+
+    const originalWatchDirectory = host.watchDirectory?.bind(host);
+    if (originalWatchDirectory) {
+        host.watchDirectory = (
+            fileName,
+            callback,
+            recursive,
+            options
+        ) =>
+            originalWatchDirectory(
+                fileName,
+                (changedFileName) => {
+                    pendingChangedFiles.add(path.normalize(changedFileName));
+                    callback(changedFileName);
+                },
+                recursive,
+                options
+            );
+    }
 
     let server: Promise<Server<any>> | undefined = undefined;
     let currentPort: number | undefined = undefined;
@@ -269,82 +329,18 @@ function updateWatchCompilationHost(
         const configFileParsingDiagnostics: ts.Diagnostic[] =
             updateConfigFile(options);
 
-        let sourceFiles: ts.SourceFile[] | undefined;
+        let sourceFiles: ts.SourceFile[] | undefined = undefined;
         if (!hadErrorLastTime && options.incremental) {
-            const builtInModules = getBuiltInModules(options);
-            console.log("Getting affected files and their dependencies...");
-            sourceFiles = [];
-            const seenFiles = new Set<string>();
-
-            // Get the root directory of the project
-            const rootDir = options.rootDir
-                ? path.normalize(options.rootDir)
-                : path.dirname(program.getCurrentDirectory());
-
-            // Helper function to check if a file is in our project
-            const isProjectFile = (fileName: string) => {
-                const normalizedPath = path.normalize(fileName);
-                return normalizedPath.startsWith(rootDir);
-            };
-
-            // Helper function to recursively collect dependencies
-            const collectDependencies = (file: ts.SourceFile) => {
-                console.log("collectDependencies", file.fileName);
-                if (seenFiles.has(file.fileName)) return;
-                seenFiles.add(file.fileName);
-                sourceFiles!.push(file);
-
-                // Get all imported files
-                const imports = file.statements
-                    .filter(ts.isImportDeclaration)
-                    .map((imp) => imp.moduleSpecifier)
-                    .filter(ts.isStringLiteral)
-                    .map((lit) => lit.text)
-                    .filter((imp) => !builtInModules.includes(imp));
-
-                // Resolve and add each imported file
-                for (const imp of imports) {
-                    const resolvedModule = ts.resolveModuleName(
-                        imp,
-                        file.fileName,
-                        options,
-                        ts.sys
-                    ).resolvedModule;
-                    if (
-                        resolvedModule &&
-                        isProjectFile(resolvedModule.resolvedFileName)
-                    ) {
-                        console.log("resolvedModule", imp, resolvedModule);
-                        const importedFile = program.getSourceFile(
-                            resolvedModule.resolvedFileName
-                        );
-                        if (importedFile) {
-                            collectDependencies(importedFile);
-                        }
-                    }
-                }
-            };
-
-            // Process affected files and their dependencies
-            while (true) {
-                const currentFile =
-                    builderProgram.getSemanticDiagnosticsOfNextAffectedFile();
-                if (!currentFile) break;
-
-                if ("fileName" in currentFile.affected) {
-                    const sourceFile = program.getSourceFile(
-                        currentFile.affected.fileName
-                    );
-                    if (sourceFile) {
-                        collectDependencies(sourceFile);
-                    }
-                } else {
-                    currentFile.affected
-                        .getSourceFiles()
-                        .forEach((file) => collectDependencies(file));
-                }
+            const buildInfo = transpiler.getBuildInfo();
+            if (buildInfo) {
+                sourceFiles = getInvalidatedSourceFiles(
+                    buildInfo.graph,
+                    pendingChangedFiles,
+                    program
+                );
             }
         }
+        pendingChangedFiles = new Set();
 
         const { diagnostics: emitDiagnostics } = transpiler.emit({
             program,
