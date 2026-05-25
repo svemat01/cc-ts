@@ -1,5 +1,11 @@
 # @cc-ts/helpers
 
+## 0.4.3
+
+### Patch Changes
+
+- 4b9a4f7: Fix included files
+
 ## 0.4.2
 
 ### Patch Changes

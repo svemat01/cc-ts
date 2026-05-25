@@ -1,5 +1,12 @@
 # @cc-ts/crpc
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [4b9a4f7]
+  - @cc-ts/helpers@0.4.3
+
 ## 0.0.7
 
 ### Patch Changes
