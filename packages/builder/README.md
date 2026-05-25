@@ -9,6 +9,7 @@ A powerful bundler and build tool for ComputerCraft TypeScript projects. The bui
 -   🎯 TypeScript to Lua compilation optimized for ComputerCraft
 -   📦 Smart bundling with dependency resolution
 -   🔍 Source map support for better debugging
+-   🔎 Dependency analysis and explain reports
 -   🚀 Development server for quick testing
 -   ⚡ Watch mode for rapid development
 -   📑 Minimal Lua library generation per entrypoint
