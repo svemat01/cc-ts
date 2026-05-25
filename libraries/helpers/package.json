@@ -9,7 +9,8 @@
         "dev": "tstl --watch --declarationMap"
     },
     "files": [
-        "dist"
+        "dist",
+        "src"
     ],
     "exports": {
         "./*": {
