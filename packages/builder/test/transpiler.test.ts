@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import * as ts from "typescript";
 
 import { parseConfigFileWithSystem } from "../src/cli/tsconfig";
 import { TranspilationError, transpileProjectFiles } from "../src/transpiler";
