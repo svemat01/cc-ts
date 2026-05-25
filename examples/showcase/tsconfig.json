@@ -1,0 +1,41 @@
+{
+  "$schema": "../../packages/builder/tsconfig-schema.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "types": [
+      "@jackmacwindows/lua-types/cc-5.2",
+      "@cc-ts/craftos-types",
+      "@jackmacwindows/cc-types"
+    ],
+    "rootDir": "src",
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "incremental": true
+  },
+  "tstl": {
+    "luaTarget": "CC-5.2",
+    "luaLibImport": "require-minimal",
+    "buildMode": "default"
+  },
+  "cc-ts": {
+    "analyze": true,
+    "analyzeFormat": "json",
+    "analyzeOutput": "dist/build-analysis.json",
+    "reproducible": true,
+    "ignoreAsEntryPoint": ["src/shared/**", "**/*.lib.ts"],
+    "externals": [
+      {
+        "pattern": "showcase_runtime.lib",
+        "mode": "copy",
+        "outDir": "vendor",
+        "reason": "Ship a tiny Lua UI helper next to the generated bundles"
+      }
+    ]
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+}

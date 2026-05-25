@@ -1,0 +1,35 @@
+{
+  "projectName": "CC-TS Showcase",
+  "version": "0.1.0",
+  "initialFuelLevel": 1200,
+  "jobTemplates": [
+    {
+      "name": "scan-chests",
+      "durationSeconds": 0.4,
+      "fuelCost": 0
+    },
+    {
+      "name": "queue-crafting",
+      "durationSeconds": 0.8,
+      "fuelCost": 6
+    },
+    {
+      "name": "dispatch-turtle",
+      "durationSeconds": 1.4,
+      "fuelCost": 18
+    }
+  ],
+  "telemetry": {
+    "serviceName": "cc-ts-showcase"
+  },
+  "network": {
+    "protocol": "cc-ts-showcase",
+    "hostname": "cc-ts-demo-host",
+    "timeoutSeconds": 5
+  },
+  "timers": {
+    "tickMs": 500,
+    "stepCount": 5,
+    "autoStopMs": 15000
+  }
+}

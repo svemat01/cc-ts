@@ -1,0 +1,21 @@
+{
+    "name": "cc-ts-showcase",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "cc-ts -p tsconfig.json",
+        "watch": "cc-ts --watch -p tsconfig.json",
+        "dev": "cc-ts --watch --serve -p tsconfig.json",
+        "analyze": "cc-ts --analyze --explain main,telemetry,network,timers -p tsconfig.json"
+    },
+    "dependencies": {
+        "@cc-ts/helpers": "workspace:*"
+    },
+    "devDependencies": {
+        "@cc-ts/builder": "workspace:*",
+        "@jackmacwindows/cc-types": "^1.0.1",
+        "@cc-ts/craftos-types": "workspace:*",
+        "@jackmacwindows/lua-types": "^2.13.2",
+        "typescript": "^5.7.2"
+    }
+}
