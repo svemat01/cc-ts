@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
-import * as cliDiagnostics from "@cc-ts/typescript-to-lua/dist/cli/diagnostics";
+import * as cliDiagnostics from "@jackmacwindows/typescript-to-lua/dist/cli/diagnostics";
 import {
     createDiagnosticReporter,
     getEmitOutDir,
-} from "@cc-ts/typescript-to-lua";
-import { locateConfigFile } from "@cc-ts/typescript-to-lua/dist/cli/tsconfig";
-import * as performance from "@cc-ts/typescript-to-lua/dist/measure-performance";
-import * as tstl from "@cc-ts/typescript-to-lua";
+} from "@jackmacwindows/typescript-to-lua";
+import { locateConfigFile } from "@jackmacwindows/typescript-to-lua/dist/cli/tsconfig";
+import * as performance from "@jackmacwindows/typescript-to-lua/dist/measure-performance";
+import * as tstl from "@jackmacwindows/typescript-to-lua";
 import * as path from "path";
 import ts from "typescript";
 

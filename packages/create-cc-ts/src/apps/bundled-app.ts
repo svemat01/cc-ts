@@ -16,7 +16,7 @@ const actions: AppAction[] = [
             "@jackmacwindows/craftos-types",
             "@jackmacwindows/cc-types",
             "@jackmacwindows/lua-types",
-            "@cc-ts/typescript-to-lua",
+            "@jackmacwindows/typescript-to-lua",
             "@cc-ts/builder",
             "typescript@^5.7.2",
         ],

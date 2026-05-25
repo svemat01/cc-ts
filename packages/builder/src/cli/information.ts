@@ -1,5 +1,5 @@
 import { optionDeclarations } from "./parse";
-import { version as tstlVersion } from "@cc-ts/typescript-to-lua/package.json";
+import { version as tstlVersion } from "@jackmacwindows/typescript-to-lua/package.json";
 
 import { version } from "../../package.json";
 export { version };

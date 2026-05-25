@@ -21,10 +21,10 @@
       "version": "0.0.4",
       "dependencies": {
         "@cc-ts/helpers": "workspace:*",
-        "@cc-ts/typescript-to-lua": "^1.28.1",
         "@jackmacwindows/cc-types": "^1.0.1",
         "@jackmacwindows/craftos-types": "^1.1.3",
         "@jackmacwindows/lua-types": "^2.13.2",
+        "@jackmacwindows/typescript-to-lua": "^1.32.0",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -37,10 +37,10 @@
       "name": "@cc-ts/helpers",
       "version": "0.3.0",
       "dependencies": {
-        "@cc-ts/typescript-to-lua": "^1.28.1",
         "@jackmacwindows/cc-types": "^1.0.1",
         "@jackmacwindows/craftos-types": "^1.1.3",
         "@jackmacwindows/lua-types": "^2.13.2",
+        "@jackmacwindows/typescript-to-lua": "^1.32.0",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -56,7 +56,7 @@
         "cc-ts": "src/cc-ts.ts",
       },
       "dependencies": {
-        "@cc-ts/typescript-to-lua": "^1.28.1",
+        "@jackmacwindows/typescript-to-lua": "^1.32.0",
         "@lvksh/logger": "^1.6.4",
         "enhanced-resolve": "^5.17.1",
         "kleur": "^4.1.5",
@@ -101,8 +101,6 @@
     "@cc-ts/crpc": ["@cc-ts/crpc@workspace:libraries/crpc"],
 
     "@cc-ts/helpers": ["@cc-ts/helpers@workspace:libraries/helpers"],
-
-    "@cc-ts/typescript-to-lua": ["@cc-ts/typescript-to-lua@1.28.1", "", { "dependencies": { "@typescript-to-lua/language-extensions": "1.19.0", "enhanced-resolve": "5.8.2", "picomatch": "^2.3.1", "resolve": "^1.15.1", "source-map": "^0.7.3" }, "peerDependencies": { "typescript": "5.7.2" }, "bin": { "tstl": "dist/tstl.js" } }, "sha512-nZyNd4fx4T/PRSNW9XWJBeFtKD+bp973dVe+A+i2CwPED7KpLb2msv9H0K6Lwf0d9GRb6tcd1+1goGPVN/E1tA=="],
 
     "@changesets/apply-release-plan": ["@changesets/apply-release-plan@7.0.6", "", { "dependencies": { "@changesets/config": "^3.0.4", "@changesets/get-version-range-type": "^0.4.0", "@changesets/git": "^3.0.2", "@changesets/should-skip-package": "^0.1.1", "@changesets/types": "^6.0.0", "@manypkg/get-packages": "^1.1.3", "detect-indent": "^6.0.0", "fs-extra": "^7.0.1", "lodash.startcase": "^4.4.0", "outdent": "^0.5.0", "prettier": "^2.7.1", "resolve-from": "^5.0.0", "semver": "^7.5.3" } }, "sha512-TKhVLtiwtQOgMAC0fCJfmv93faiViKSDqr8oMEqrnNs99gtSC1sZh/aEMS9a+dseU1ESZRCK+ofLgGY7o0fw/Q=="],
 
@@ -149,6 +147,8 @@
     "@jackmacwindows/craftos-types": ["@jackmacwindows/craftos-types@1.1.3", "", {}, "sha512-cgdUWvMsl8JOK7EQzNoP6S2P+B+WuTXdLDDxvwfEBnrMSzxWITCdTF8EEzgeiUaAflbnIAoLJJ1XxI33h4+iFA=="],
 
     "@jackmacwindows/lua-types": ["@jackmacwindows/lua-types@2.13.2", "", {}, "sha512-XoqHmgtG1SLWzmMx8wQc0sJtPmrzjCFbiwNiBIZE7HOEXWdJi7NDKVlE1nl9A5745Yb5jIkfz2deOzMtHiHVcQ=="],
+
+    "@jackmacwindows/typescript-to-lua": ["@jackmacwindows/typescript-to-lua@1.32.0", "", { "dependencies": { "@typescript-to-lua/language-extensions": "1.19.0", "enhanced-resolve": "5.8.2", "picomatch": "^2.3.1", "resolve": "^1.15.1", "source-map": "^0.7.3" }, "peerDependencies": { "typescript": "5.8.2" }, "bin": { "tstl": "dist/tstl.js" } }, "sha512-W6pGb4lWZP/PAGwPCWz7GRcavRp3voDUGtZG84E7fcqBQDNAS/tRwIyKS10VdljubATVIZPF8LIkHo3XQSAlqQ=="],
 
     "@lvksh/logger": ["@lvksh/logger@1.6.4", "", {}, "sha512-/uzs3o+SeOri3jXhkjg3/4+JaZPriJA3kB48M5KepRnzR+jaA6vRLzI3UbDx3MNWpkiqonAe4mDpVJz/C9e1jw=="],
 
@@ -504,7 +504,7 @@
 
     "@cc-ts/helpers/@types/bun": ["@types/bun@1.3.14", "", { "dependencies": { "bun-types": "1.3.14" } }, "sha512-h1hFqFVcvAvD9j9K7ZW7vd82aSA+rTdznZa+5bwvCwqSB1jmmfLcbIWhOLx1/+boy/xmjgCs/OMUL8hRJSmnPw=="],
 
-    "@cc-ts/typescript-to-lua/enhanced-resolve": ["enhanced-resolve@5.8.2", "", { "dependencies": { "graceful-fs": "^4.2.4", "tapable": "^2.2.0" } }, "sha512-F27oB3WuHDzvR2DOGNTaYy0D5o0cnrv8TeI482VM4kYgQd/FT9lUQwuNsJ0oOHtBUq7eiW5ytqzp7nBFknL+GA=="],
+    "@jackmacwindows/typescript-to-lua/enhanced-resolve": ["enhanced-resolve@5.8.2", "", { "dependencies": { "graceful-fs": "^4.2.4", "tapable": "^2.2.0" } }, "sha512-F27oB3WuHDzvR2DOGNTaYy0D5o0cnrv8TeI482VM4kYgQd/FT9lUQwuNsJ0oOHtBUq7eiW5ytqzp7nBFknL+GA=="],
 
     "@manypkg/find-root/@types/node": ["@types/node@12.20.55", "", {}, "sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ=="],
 

@@ -1,8 +1,8 @@
 import * as ts from "typescript";
-import * as cliDiagnostics from "@cc-ts/typescript-to-lua/dist/cli/diagnostics";
-import * as tstl from "@cc-ts/typescript-to-lua";
+import * as cliDiagnostics from "@jackmacwindows/typescript-to-lua/dist/cli/diagnostics";
+import * as tstl from "@jackmacwindows/typescript-to-lua";
 import type { CCTSOptions, CompilerOptions } from "../CompilerOptions";
-import type { ParsedCommandLine as TstlParsedCommandLine } from "@cc-ts/typescript-to-lua";
+import type { ParsedCommandLine as TstlParsedCommandLine } from "@jackmacwindows/typescript-to-lua";
 
 export interface ParsedCommandLine extends TstlParsedCommandLine {
     options: CompilerOptions;

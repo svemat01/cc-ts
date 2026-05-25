@@ -1,4 +1,4 @@
-import { createDiagnosticFactoryWithCode } from "@cc-ts/typescript-to-lua/dist/utils";
+import { createDiagnosticFactoryWithCode } from "@jackmacwindows/typescript-to-lua/dist/utils";
 import ts from "typescript";
 
 const createDiagnosticFactory = <TArgs extends any[]>(

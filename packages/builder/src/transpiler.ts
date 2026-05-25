@@ -1,7 +1,7 @@
-import * as tstl from "@cc-ts/typescript-to-lua";
+import * as tstl from "@jackmacwindows/typescript-to-lua";
 import * as ts from "typescript";
-import { resolveDependencies } from "@cc-ts/typescript-to-lua/dist/transpilation/resolve";
-import * as performance from "@cc-ts/typescript-to-lua/dist/measure-performance";
+import { resolveDependencies } from "@jackmacwindows/typescript-to-lua/dist/transpilation/resolve";
+import * as performance from "@jackmacwindows/typescript-to-lua/dist/measure-performance";
 import * as path from "node:path";
 import { CCBundler } from "./bundler";
 import { logger as _logger } from "./logger";

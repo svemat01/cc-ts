@@ -2,9 +2,9 @@ import * as path from "path";
 import ts from "typescript";
 import type { CCTSOptions, CompilerOptions } from "../CompilerOptions";
 import { updateParsedConfigFile, type ParsedCommandLine } from "./parse";
-import { locateConfigFile } from "@cc-ts/typescript-to-lua/dist/cli/tsconfig";
+import { locateConfigFile } from "@jackmacwindows/typescript-to-lua/dist/cli/tsconfig";
 
-import * as tstlTsconfig from "@cc-ts/typescript-to-lua/dist/cli/tsconfig";
+import * as tstlTsconfig from "@jackmacwindows/typescript-to-lua/dist/cli/tsconfig";
 
 export { locateConfigFile };
 

@@ -1,5 +1,5 @@
 import * as ts from "typescript";
-import type { CompilerOptions as TSTLOptions } from "@cc-ts/typescript-to-lua";
+import type { CompilerOptions as TSTLOptions } from "@jackmacwindows/typescript-to-lua";
 import * as diagnosticFactories from "./diagnostics";
 
 export interface CCTSOptions {
