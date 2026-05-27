@@ -1,7 +1,7 @@
 // Example comparing snapshot-style vs instrument-style APIs
 
-import { SimpleMetricsCollector } from "../helpers/metrics";
-import { Meter } from "../helpers/instruments";
+import { Meter } from "@cc-ts/helpers/otel/helpers/instruments";
+import { SimpleMetricsCollector } from "@cc-ts/helpers/otel/helpers/metrics";
 
 // Example: ComputerCraft turtle mining operations
 

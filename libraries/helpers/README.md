@@ -38,7 +38,7 @@ void main();
 runOsEventLoop();
 ```
 
-[Learn more about Scheduler](./src/scheduler.ts)
+[Learn more about Scheduler](./src/core/scheduler.ts)
 
 ### CLI Parser (`cli-parser.ts`) 🎯
 
@@ -77,7 +77,7 @@ const commands: Command[] = [
 executeCommand(parseCliArgs([...process.argv]), commands);
 ```
 
-[Learn more about CLI Parser](./src/cli-parser.ts)
+[Learn more about CLI Parser](./src/utils/cli-parser.ts)
 
 ### Sandcorn (`sandcorn.ts`) 🌽
 
@@ -99,7 +99,7 @@ const { tick, machineId, seq } = decodeSandcorn(id);
 print(`ID from computer ${machineId} at hour ${tick}`);
 ```
 
-[Learn more about Sandcorn](./src/sandcorn.ts)
+[Learn more about Sandcorn](./src/utils/sandcorn.ts)
 
 ### Persisted Storage (`persisted.ts`) 💾
 
@@ -127,7 +127,7 @@ gameState.value.highScore = 1000;
 gameState.save();
 ```
 
-[Learn more about Persisted Storage](./src/persisted.ts)
+[Learn more about Persisted Storage](./src/utils/persisted.ts)
 
 ### Proxy (`proxy.ts`) 🎭
 
@@ -173,7 +173,7 @@ events.on("diamond_detected", () => {
 });
 ```
 
-[Learn more about AbortController](./src/abortController.ts)
+[Learn more about AbortController](./src/utils/abortController.ts)
 
 ## 📚 Additional Utilities
 

@@ -1,5 +1,4 @@
 /**
- * @module types
  * @description Core type definitions for ComputerCraft TypeScript events and interactions
  *
  * This module provides TypeScript type definitions for ComputerCraft's event system,
@@ -26,6 +25,8 @@
  *     monitor.write("Hello World!");
  * }
  * ```
+ * 
+ * @module core/types
  */
 
 export namespace CC {

@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { Application, type TypeDocOptions } from "typedoc";
+import { Application, OptionDefaults, type TypeDocOptions } from "typedoc";
 
 type DeepPartial<TObject> = TObject extends object
     ? {
@@ -9,6 +9,9 @@ type DeepPartial<TObject> = TObject extends object
 
 const config = {
     entryPoints: ["libraries/*", "packages/*"],
+    exclude: [
+        "packages/craftos-types",
+    ],
     name: "CC TS",
     entryPointStrategy: "packages",
     includeVersion: false,
@@ -16,6 +19,15 @@ const config = {
     packageOptions: {
         includeVersion: true,
         entryPoints: ["src/"],
+
+        modifierTags: [
+            ...OptionDefaults.modifierTags,
+            '@noSelf',
+            '@noSelfInFile',
+            '@noResolution',
+            '@customConstructor',
+            '@customName'
+        ]
     },
 
     plugin: ["typedoc-material-theme"],

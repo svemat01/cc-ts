@@ -1,16 +1,8 @@
 // Basic usage examples for OpenTelemetry types and helpers
 
-import {
-  SimpleLogger,
-  SimpleMetricsCollector,
-  SeverityNumber,
-  createStandardBuckets,
-  createLogRecord,
-  createNumberDataPoint,
-  createGauge,
-  createResource,
-  createInstrumentationScope,
-} from "../index";
+import { SimpleLogger, createLogRecord } from "@cc-ts/helpers/otel/helpers/logs";
+import { SimpleMetricsCollector, createGauge, createNumberDataPoint } from "@cc-ts/helpers/otel/helpers/metrics";
+import { SeverityNumber } from "@cc-ts/helpers/otel/types/logs";
 
 // Example 1: Basic Logging
 export function loggingExample() {

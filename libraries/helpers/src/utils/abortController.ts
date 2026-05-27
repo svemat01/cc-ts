@@ -1,6 +1,4 @@
 /**
- * @module AbortController
- *
  * 🎮 A TypeScript implementation of the standard AbortController API for ComputerCraft!
  * Perfect for when you need to cancel operations faster than a creeper changes its mind.
  *
@@ -43,6 +41,8 @@
  *
  * @warning This implementation closely follows the web standard but is adapted
  * for ComputerCraft's environment. Some subtle differences may exist.
+ * 
+ * @module utils/abortController
  */
 
 import { setTimeout } from "../core/scheduler";

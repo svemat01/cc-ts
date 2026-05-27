@@ -1,6 +1,4 @@
 /**
- * @module EventEmitter
- *
  * 🎭 A strongly-typed event emitter for ComputerCraft - because even computers
  * need to express their feelings! Perfect for when you need to shout events
  * across your codebase with style.
@@ -40,6 +38,7 @@
  * - Implementing pub/sub patterns
  *
  * @typeParam Events - A record of event names mapped to their argument types
+ * @module utils/eventEmitter
  */
 
 export type EventMap = Record<string, any[]>;

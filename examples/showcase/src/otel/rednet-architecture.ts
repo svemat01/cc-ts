@@ -1,9 +1,9 @@
 // Example of the new Rednet-based architecture
 // Clients send metrics and logs immediately, collector handles batching
 
-import { RednetClient, RednetInstrumentClient } from "..";
-import { RednetCollector } from "../collector";
-import { SeverityNumber } from "../types/logs";
+import { RednetClient, RednetInstrumentClient } from "@cc-ts/helpers/otel/client";
+import { RednetCollector } from "@cc-ts/helpers/otel/collector";
+import { SeverityNumber } from "@cc-ts/helpers/otel/types/logs";
 
 // Example: Turtle client sending both metrics and logs immediately
 export function turtleClientExample() {

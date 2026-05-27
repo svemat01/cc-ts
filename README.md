@@ -15,7 +15,7 @@ Your trusty toolbelt for ComputerCraft TypeScript development! Packed with utili
 -   📡 Rednet helpers
 -   And much more!
 
-[Learn more about helpers](./libraries/helpers)
+[Learn more about helpers](./libraries/helpers/README.md)
 
 ### 🏗️ @cc-ts/builder
 
@@ -28,7 +28,7 @@ The magical bundler that turns your TypeScript into ComputerCraft-ready Lua!
 -   ⚡ Watch mode
 -   🗜️ Optional minification
 
-[Learn more about builder](./packages/builder)
+[Learn more about builder](./packages/builder/README.md)
 
 ### 🚀 @cc-ts/crpc
 
@@ -40,7 +40,7 @@ Type-safe RPC that speaks tRPC - because even sand computers deserve great APIs!
 -   📡 Built-in subscriptions
 -   🔌 Multiple transport options
 
-[Learn more about CRPC](./libraries/crpc)
+[Learn more about CRPC](./libraries/crpc/README.md)
 
 ### 🎨 create-cc-ts
 
@@ -49,4 +49,4 @@ Create new CC-TS projects with zero configuration! Choose from:
 -   📦 **Bundled App**: Complete application with bundling and development setup
 -   📚 **CC Library**: Shareable library for other CC-TS projects
 
-[Learn more about create-cc-ts](./packages/create-cc-ts)
+[Learn more about create-cc-ts](./packages/create-cc-ts/README.md)

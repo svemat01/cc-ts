@@ -1,5 +1,4 @@
 /**
- * @module proxy
  * @description 🎭 Lua-friendly proxy implementation for intercepting object operations
  *
  * This module provides a proxy implementation that works with Lua's metatables,
@@ -22,6 +21,8 @@
  *
  * proxy.count++; // Logs: "Accessing count", "Setting count to 1"
  * ```
+ * 
+ * @module utils/proxy
  */
 
 /**

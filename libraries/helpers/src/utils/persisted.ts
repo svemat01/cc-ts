@@ -1,5 +1,4 @@
 /**
- * @module persisted
  * @description 💾 Persistent storage manager for ComputerCraft
  *
  * This module provides a simple way to persist data across computer restarts.
@@ -21,6 +20,7 @@
  * scores.value.player1 += 10;
  * scores.save();
  * ```
+ * @module utils/persisted
  */
 
 /**

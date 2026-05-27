@@ -51,7 +51,7 @@
  * import { on, dispatch } from "@cc-ts/helpers/scheduler";
  *
  * // Declare additional OS events
- * declare module "@cc-ts/helpers/types" {
+ * declare module "@cc-ts/helpers/core/types" {
  *   interface Events {
  *     "turtle_dig": [success: boolean, block: string];
  *     "inventory_change": [slot: number, count: number];
@@ -92,13 +92,13 @@
  * }
  * ```
  *
- * @module scheduler
+ * @module core/scheduler
  */
 
 import { pretty } from "cc.pretty";
 import { Events } from "./types";
 
-class EventHandler<
+export class EventHandler<
     _Events extends Record<string, any[]>,
     T extends keyof _Events = keyof _Events
 > {

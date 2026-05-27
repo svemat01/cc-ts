@@ -449,7 +449,7 @@ export class TurtleInventoryEvent implements IEvent {
     }
 }
 
-class SpeakerAudioEmptyEvent implements IEvent {
+export class SpeakerAudioEmptyEvent implements IEvent {
     public side: string = "";
     public readonly _type = "speaker_audio_empty";
     public get name(): "speaker_audio_empty" {
@@ -472,7 +472,7 @@ class SpeakerAudioEmptyEvent implements IEvent {
     }
 }
 
-class ComputerCommandEvent implements IEvent {
+export class ComputerCommandEvent implements IEvent {
     public _args: string[] = [];
     public readonly _type = "computer_command";
     public get name(): "computer_command" {
@@ -571,7 +571,7 @@ export type Events = {
     [Event in NonGenericEvent as Event["name"]]: Event;
 } & Record<string & {}, GenericEvent>;
 
-type Constructor<T extends {} = {}> = new (...args: any[]) => T;
+export type Constructor<T extends {} = {}> = new (...args: any[]) => T;
 export function pullEventRaw(filter: string | null = null): AnyEvent | null {
     let args = coroutine.yield(filter);
     for (let init of eventInitializers) {

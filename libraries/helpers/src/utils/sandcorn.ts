@@ -1,5 +1,4 @@
 /**
- * @module sandcorn
  * @description 🌽 A distributed unique ID generator for ComputerCraft computers
  *
  * Sandcorn (like Snowflake, but for sand computers! 🏖️) generates unique, sortable IDs
@@ -32,6 +31,8 @@
  *
  * @warning Sandcorn assumes your computers have unique IDs and relatively synchronized clocks.
  * Time drift between computers may affect ID ordering.
+ * 
+ * @module utils/sandcorn
  */
 
 /**

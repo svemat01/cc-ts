@@ -1,6 +1,4 @@
 /**
- * @module cli-parser
- *
  * 🎮 A delightful CLI argument parser that makes handling command-line arguments as fun as playing with LEGOs!
  *
  * This module provides a powerful yet friendly way to parse command-line arguments and build CLI applications.
@@ -41,6 +39,7 @@
  * ```
  *
  * @packageDocumentation
+ * @module utils/cli-parser
  */
 
 /**
