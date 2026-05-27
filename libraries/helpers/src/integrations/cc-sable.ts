@@ -48,17 +48,17 @@ declare global {
 // GLOBAL: sublevel
 // ============================================================================
 
-/** Pose information returned by sublevel APIs */
-interface SubLevelPose {
-    position: Vector;
-    orientation: Quaternion;
-    scale: Vector;
-    rotationPoint: Vector;
-}
-
 /** @noSelf */
 declare global {
     namespace sublevel {
+        /** Pose information returned by sublevel APIs */
+        interface SubLevelPose {
+            position: Vector;
+            orientation: quaternion;
+            scale: Vector;
+            rotationPoint: Vector;
+        }
+
         /** Determines whether the computer is currently on a Sub-Level */
         function isInPlotGrid(): boolean;
     
